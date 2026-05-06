@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi import APIRouter, Body, Header, HTTPException, Request
+from fastapi import APIRouter, Header, HTTPException, Request
 
 router = APIRouter()
 

@@ -1,12 +1,14 @@
-from pathlib import Path
 import hashlib
+from pathlib import Path
+
 
 def sha256_bytes(data: bytes) -> str:
-    return 'sha256:' + hashlib.sha256(data).hexdigest()
+    return "sha256:" + hashlib.sha256(data).hexdigest()
+
 
 def sha256_file(path: str | Path) -> str:
     h = hashlib.sha256()
-    with Path(path).open('rb') as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b''):
+    with Path(path).open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
             h.update(chunk)
-    return 'sha256:' + h.hexdigest()
+    return "sha256:" + h.hexdigest()

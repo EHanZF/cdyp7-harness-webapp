@@ -1,9 +1,13 @@
 {
     "python.testing.pytestArgs": [
-        "."
+        "tests"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "makefile.makefilePath": "C:\\Users\\z0190004\\ZF_Braking_Agent\\cdyp7-harness-tooling-api-azure-webapp",
-    "makefile.buildLog": "C:\\Users\\z0190004\\ZF_Braking_Agent\\cdyp7-harness-tooling-api-azure-webapp"
+    "makefile.buildLog": "C:\\Users\\z0190004\\ZF_Braking_Agent\\cdyp7-harness-tooling-api-azure-webapp",
+
+    "flake8.enabled": true,
+    "flake8.importStrategy": "fromEnvironment",
+    "flake8.args": []
 }

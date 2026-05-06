@@ -1,0 +1,12 @@
+OK static tooling API validation
+
+STDERR:
+
+EXIT=0
+
+CONTRACT_TEST:
+OK tooling API contract models
+
+STDERR:
+
+EXIT=0

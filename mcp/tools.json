@@ -1,0 +1,125 @@
+{
+  "namespace": "harness",
+  "tools": [
+    {
+      "name": "harness.generate_release_sheet",
+      "description": "Generates a System Release Sheet DOCX using an approved template and validated input data. Does not approve or publish releases.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "document_id",
+          "system",
+          "cat_level",
+          "fields"
+        ],
+        "properties": {
+          "document_id": {
+            "type": "string"
+          },
+          "system": {
+            "type": "string"
+          },
+          "cat_level": {
+            "enum": [
+              "CAT1",
+              "CAT2",
+              "CAT3",
+              "CAT4",
+              "CAT5"
+            ]
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    {
+      "name": "harness.validate_release_sheet",
+      "description": "Validates generated release sheet against schema and CAT rules.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "validation_profile"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string"
+          },
+          "validation_profile": {
+            "enum": [
+              "system_release_sheet",
+              "system_release_sheet_cat5"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "harness.write_receipt",
+      "description": "Writes immutable receipt to receipts container.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "event_type",
+          "actor",
+          "artifact_id",
+          "sha256"
+        ],
+        "properties": {
+          "event_type": {
+            "type": "string"
+          },
+          "actor": {
+            "type": "string"
+          },
+          "artifact_id": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "name": "harness.fetch_artifact",
+      "description": "Returns metadata for controlled read-only artifact.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "artifact_id"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "harness.resolve_replay",
+      "description": "Resolves prior execution using cached artifacts and receipts. No regeneration.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "adapter_version"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "adapter_version": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-intent-boundary"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "python-docx"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pylint",
+  "jsonschema",
+  "fastapi",
+  "httpx",
+  "pydantic"
+]
+
+[tool.pytest.ini_options]
+testpaths = [
+  "tests"
+]
+addopts = [
+  "-q",
+  "--import-mode=importlib"
+]
+
+[tool.pylint.main]
+py-version = "3.11"
+recursive = true
+
+[tool.pylint.messages_control]
+disable = [
+  "missing-module-docstring",
+  "missing-class-docstring",
+  "missing-function-docstring",
+  "too-few-public-methods"
+]
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint.design]
+max-args = 8
+max-locals = 20
+max-branches = 15

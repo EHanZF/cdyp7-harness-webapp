@@ -1,0 +1,88 @@
+{
+  "tool_name": "harness.generate_release_sheet",
+  "run_id": "run-local-001",
+  "actor": "tooling.user@example.com",
+  "arguments": {
+    "document_id": "srs-123",
+    "system": "EPBi-BA",
+    "cat_level": "CAT5",
+    "fields": {
+      "actor": "tooling.user@example.com",
+      "template_ref": {
+        "uri": "file://templates/system-release-sheet-template.docx",
+        "sha256": "sha256:c82c036d9c3661e108f8c0a52443a9dae2d8d40479dc2a2a419e9960625cef7c"
+      },
+      "release": {
+        "project": "GM E2UL",
+        "platform": "E2UL",
+        "system": "EPBi-BA",
+        "delivery": "S011",
+        "cat_level": "CAT5",
+        "status": "Draft",
+        "revision": "0.1",
+        "date": "2026-03-31"
+      },
+      "identification": {
+        "cplace_id": "ACTXQ",
+        "zf_part_number_summary": "See Delivery Content section",
+        "oem_part_number_summary": "See Delivery Content section",
+        "system_ptc_project_id": "1188953",
+        "system_ptc_alm_delivery_id": "9876297"
+      },
+      "software": [
+        {
+          "name": "PBC APPL",
+          "ptc_integrity_id": "9954148",
+          "software_version_zf": "GM_E2UL_PBC_APPL_S011_00",
+          "software_version_customer": null,
+          "configuration_path": "file://snapshots/ptc/pbc-appl.json",
+          "to_whom": "OEM"
+        }
+      ],
+      "reason_for_release": {
+        "clarity_project_id": "PR58409",
+        "reason_description": "Official release of S011 CAT5 EPB System.",
+        "former_delivery_id": "S010",
+        "replacement_delivery_id": "S011",
+        "system_changes": "Update to Bosch compiler."
+      },
+      "release_documentation": {
+        "software_release_document": {
+          "title": "BrkSw_PBC_GM_E2UL_Software_Release_Sheet_S011_00.pdf",
+          "revision": "1.6",
+          "status": "Released",
+          "archive": "PTC"
+        },
+        "test_summary_report": {
+          "title": "Test_Summary_Report_EPB_GM_E2UL_S011_CAT5.pdf",
+          "revision": "1.2",
+          "status": "Released",
+          "aggregated_test_result": "Passed",
+          "archive": "PTC"
+        },
+        "impact_analysis": {
+          "title": "EPBi_GM_E2UL_Delta_Impact_Analysis_S009.xlsx",
+          "revision": "1.5",
+          "status": "Released",
+          "archive": "PTC"
+        },
+        "safety_case": {
+          "title": "EPBi_GM_E2UL_Design_verification_Report.docx",
+          "revision": "2.12",
+          "status": "Released",
+          "archive": "PTC",
+          "required_for_cat5": true
+        }
+      },
+      "known_issues": {
+        "issues_found": false,
+        "driver_information": "None."
+      },
+      "generation_options": {
+        "validate_after_render": true,
+        "emit_receipt": true,
+        "allow_warnings": true
+      }
+    }
+  }
+}

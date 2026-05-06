@@ -1,0 +1,429 @@
+diff --git a/requirements-dev.txt b/requirements-dev.txt
+new file mode 100644
+--- /dev/null
++++ b/requirements-dev.txt
+@@ -0,0 +1,7 @@
++# Dev-only runtime helpers
++uvicorn>=0.30
++httpx>=0.27
++pytest>=8.0
++pytest-cov>=5.0
++python-dotenv>=1.0
++
++diff --git a/Makefile b/Makefile
++new file mode 100644
++--- /dev/null
+++++ b/Makefile
++@@ -0,0 +1,22 @@
++.PHONY: venv install install-dev validate test smoke run
++
++venv:
++	python -m venv .venv
++
++install:
++	python -m pip install -r requirements.txt
++
++install-dev:
++	python -m pip install -r requirements.txt -r requirements-dev.txt
++
++validate:
++	python scripts/validate_static.py
++
++test:
++	pytest -q tests/contract
++
++smoke:
++	python scripts/smoke_tooling.py
++
++run:
++	uvicorn app.main:app --host 127.0.0.1 --port 8000
++
++diff --git a/scripts/run_local.ps1 b/scripts/run_local.ps1
++new file mode 100644
++--- /dev/null
+++++ b/scripts/run_local.ps1
++@@ -0,0 +1,6 @@
++$env:PYTHONPATH="."
++if (Test-Path ".env") {
++  Write-Host "Using .env"
++}
++uvicorn app.main:app --host 127.0.0.1 --port 8000
++
++diff --git a/scripts/ci_install_dev.ps1 b/scripts/ci_install_dev.ps1
++new file mode 100644
++--- /dev/null
+++++ b/scripts/ci_install_dev.ps1
++@@ -0,0 +1,11 @@
++param(
++    [string]$RequirementsDev = "requirements-dev.txt"
++)
++
++Write-Host "Checking for dev requirements file: $RequirementsDev"
++if (Test-Path $RequirementsDev) {
++    Write-Host "Installing dev requirements from $RequirementsDev"
++    python -m pip install -r $RequirementsDev
++} else {
++    Write-Host "No dev requirements file found at $RequirementsDev — skipping."
++}
++
++diff --git a/.env.example b/.env.example
++new file mode 100644
++--- /dev/null
+++++ b/.env.example
++@@ -0,0 +1,11 @@
++# .env.example - local development placeholders
++# Use these values for local testing; do NOT commit secrets.
++
++LOCAL_STORAGE_ENABLED=true
++AZURE_STORAGE_ACCOUNT_URL=
++AZURE_KEY_VAULT_URI=
++AZURE_KEY_VAULT_ENABLED=false
++AZURE_STORAGE_CONTAINER_ARTIFACTS=artifacts
++AZURE_STORAGE_CONTAINER_RECEIPTS=receipts
++AZURE_STORAGE_CONTAINER_TEMPLATES=templates
++PORT=8000
++
++diff --git a/scripts/smoke_tooling.py b/scripts/smoke_tooling.py
++index e69de29..b6d1f8a 100644
++--- a/scripts/smoke_tooling.py
+++++ b/scripts/smoke_tooling.py
++@@ -1,7 +1,49 @@
+-#!/usr/bin/env python3
+-import json, urllib.request
+-payload=json.loads(open('examples/generate-release-sheet.tool-call.json', encoding='utf-8').read())
+-req=urllib.request.Request('http://127.0.0.1:8000/mcp/tools/call', data=json.dumps(payload).encode(), headers={'content-type':'application/json'}, method='POST')
+-with urllib.request.urlopen(req) as r:
+-    out=json.loads(r.read())
+-print(json.dumps(out, indent=2))
++#!/usr/bin/env python3
++"""
++Smoke test for the tooling API.
++
++Tries an HTTP call to a local server at /mcp/tools/call. If the server is not
++reachable (or FastAPI/uvicorn is not installed), falls back to invoking the
++tooling implementation directly so developers can run a smoke check without
++starting the HTTP server.
++"""
++
++import json
++import urllib.request
++import urllib.error
++from pathlib import Path
++
++root = Path(__file__).resolve().parents[1]
++payload = json.loads((root / 'examples' / 'generate-release-sheet.tool-call.json').read_text(encoding='utf-8'))
++
++url = 'http://127.0.0.1:8000/mcp/tools/call'
++try:
++    req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={'content-type':'application/json'}, method='POST')
++    with urllib.request.urlopen(req, timeout=5) as r:
++        out = json.loads(r.read())
++    print(json.dumps(out, indent=2))
++except (urllib.error.URLError, ConnectionRefusedError, TimeoutError) as exc:
++    print('HTTP call failed or server not running — falling back to direct invocation:', str(exc))
++    # Direct invocation: call the tooling methods without going through FastAPI/uvicorn
++    from app.core.tooling import generate_release_sheet, validate_release_sheet, write_receipt, fetch_artifact, resolve_replay
++    from app.core.models import GenerateReleaseSheetToolRequest, ValidateReleaseSheetToolRequest, WriteReceiptToolRequest, FetchArtifactToolRequest, ResolveReplayToolRequest
++
++    env = payload
++    tool_name = env.get('tool_name')
++    if tool_name == 'harness.generate_release_sheet':
++        res = generate_release_sheet(GenerateReleaseSheetToolRequest(**env['arguments']), env.get('actor', ''), env.get('run_id'))
++        print(json.dumps({'content': res}, indent=2))
++    elif tool_name == 'harness.validate_release_sheet':
++        res = validate_release_sheet(ValidateReleaseSheetToolRequest(**env['arguments']))
++        print(json.dumps({'content': res}, indent=2))
++    elif tool_name == 'harness.write_receipt':
++        res = write_receipt(WriteReceiptToolRequest(**env['arguments']), env.get('actor', ''))
++        print(json.dumps({'content': res}, indent=2))
++    elif tool_name == 'harness.fetch_artifact':
++        res = fetch_artifact(FetchArtifactToolRequest(**env['arguments']))
++        print(json.dumps({'content': res}, indent=2))
++    elif tool_name == 'harness.resolve_replay':
++        res = resolve_replay(ResolveReplayToolRequest(**env['arguments']))
++        print(json.dumps({'content': res}, indent=2))
++    else:
++        print(json.dumps({'error': 'unknown_tool', 'tool_name': tool_name}, indent=2))
++
++diff --git a/app/core/release_sheet_validator.py b/app/core/release_sheet_validator.py
++index d41d8cd..a3f5b2e 100644
++--- a/app/core/release_sheet_validator.py
+++++ b/app/core/release_sheet_validator.py
++@@ -1,34 +1,40 @@
++ from pydantic import BaseModel
++ from app.core.storage import blob_store
++ from app.core.config import settings
++ from docx import Document
++ from pathlib import Path
++
++ class ValidationCheck(BaseModel):
++     check_id: str
++     status: str
++     message: str | None = None
++ class ValidationResult(BaseModel):
++     status: str
++     checks: list[ValidationCheck]
++
++ def validate_release_sheet_docx_blob(blob_name: str, profile: str='system_release_sheet') -> ValidationResult:
++     checks=[]
++     data = blob_store.read_bytes(settings.artifacts_container, blob_name)
++     tmp = Path('outputs') / ('validate-' + blob_name)
++     tmp.parent.mkdir(exist_ok=True)
++     tmp.write_bytes(data)
++     doc = Document(tmp)
++     text='\\n'.join(p.text for p in doc.paragraphs)
++     def passed(cid): checks.append(ValidationCheck(check_id=cid,status='passed'))
++     def failed(cid,msg): checks.append(ValidationCheck(check_id=cid,status='failed',message=msg))
++     def warning(cid,msg): checks.append(ValidationCheck(check_id=cid,status='warning',message=msg))
++     passed('docx_readable')
++     if 'System Release Sheet' in text:
++         passed('system_release_sheet_title_present')
++     else:
++         failed('system_release_sheet_title_present','Title missing')
++
++     if '{{' in text or '}}' in text:
++         failed('unresolved_required_placeholders','Unresolved placeholder found')
++     else:
++         passed('unresolved_required_placeholders')
++     if profile == 'system_release_sheet_cat5':
++         passed('cat5_profile_applied')
++     warning('approval_signatures_present','Approval signatures require HITL completion.')
++     status='failed' if any(c.status=='failed' for c in checks) else ('warning' if any(c.status=='warning' for c in checks) else 'passed')
++     return ValidationResult(status=status, checks=checks)
++
++diff --git a/app/main.py b/app/main.py
++index 3b83ef1..9f6c8b7 100644
++--- a/app/main.py
+++++ b/app/main.py
++@@ -1,14 +1,26 @@
+- from fastapi import FastAPI
+- from fastapi.staticfiles import StaticFiles
+- from fastapi.responses import FileResponse
+- from pathlib import Path
+- from app.core.config import load_adapter, assert_adapter
+- from app.api.routes import router
+-
+- app = FastAPI(title='CDYP7 Runtime Harness Tooling API', version='1.0.0')
+- adapter = load_adapter(); assert_adapter(adapter); app.state.adapter = adapter
+- app.include_router(router)
+- STATIC = Path(__file__).parent / 'static'
+- app.mount('/static', StaticFiles(directory=str(STATIC)), name='static')
+- @app.get('/')
+- def index(): return FileResponse(STATIC / 'index.html')
++import os
++from fastapi import FastAPI
++from fastapi.staticfiles import StaticFiles
++from fastapi.responses import FileResponse
++from pathlib import Path
++from app.core.config import load_adapter, assert_adapter
++from app.api.routes import router
++
++# Safety guard: in production we require Azure storage to be configured so the
++# service cannot accidentally fall back to local filesystem for artifacts.
++if os.getenv("ENV") == "production":
++    required = ["AZURE_STORAGE_ACCOUNT_URL"]
++    missing = [k for k in required if not os.getenv(k)]
++    if missing:
++        raise RuntimeError(f"Missing required Azure config: {missing}")
++
++app = FastAPI(title='CDYP7 Runtime Harness Tooling API', version='1.0.0')
++adapter = load_adapter(); assert_adapter(adapter); app.state.adapter = adapter
++app.include_router(router)
++STATIC = Path(__file__).parent / 'static'
++app.mount('/static', StaticFiles(directory=str(STATIC)), name='static')
++
++
++@app.get('/')
++def index():
++    return FileResponse(STATIC / 'index.html')
++
++diff --git a/README.md b/README.md
++index 5b6a3d2..b8c7ef4 100644
++--- a/README.md
+++++ b/README.md
++@@ -1,50 +1,94 @@
++# CDYP7 Runtime Harness Tooling API — Azure App Service + Blob
++
++This bundle updates the Harness SW for the web app with the strict CDYP7 Tooling API.
++
++## Quick start
++
++```bash
++python -m venv .venv
++source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
++pip install -r requirements.txt
++python scripts/validate_static.py
++uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
++```
++
++## Local Development
++
++### Prereqs
++- Python 3.12+
++- pip
++
++### Setup
++```bash
++python -m venv .venv
++. .venv/bin/activate  # Windows: .\.venv\Scripts\Activate.ps1
++pip install -r requirements.txt -r requirements-dev.txt
++```
++
++### Validate & Test
++
++```bash
++make validate
++make test
++```
++
++### Run
++
++```bash
++make run
++```
++
++### Smoke Test
++
++```bash
++make smoke
++```
++
++### CI helper (PowerShell)
++If you want to add a non-production/dev stage in Azure DevOps that installs dev dependencies, the repository includes `scripts/ci_install_dev.ps1`. Example Azure Pipelines snippet:
++
++```yaml
++- stage: DevSmoke
++  displayName: 'Dev: smoke and validation (non-prod)'
++  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'develop'))
++  jobs:
++    - job: InstallDev
++      pool:
++        vmImage: 'ubuntu-latest'
++      steps:
++        - powershell: pwsh ./scripts/ci_install_dev.ps1
++          displayName: 'Install dev requirements'
++        - script: make validate
++          displayName: 'Run static validation'
++```
++
++## Tooling surface
++
++```text
++GET  /mcp/tools/list
++POST /mcp/tools/call
++POST /tools/generate-release-sheet
++POST /tools/validate-release-sheet
++POST /tools/write-receipt
++POST /tools/fetch-artifact
++POST /tools/resolve-replay
++```
++
++## Azure DevOps
++
++Use:
++
++```text
++azure-pipelines.yml
++```
++
++## Template hash
++
++```text
++sha256:c82c036d9c3661e108f8c0a52443a9dae2d8d40479dc2a2a419e9960625cef7c
++```
++
++## Boundary
++
++```text
++Execution + evidence only.
++No release approval.
++No repository mutation.
++No HITL resolution.
++No policy decision.
++No requirement authoring.
++```
++
++diff --git a/azure-pipelines.yml b/azure-pipelines.yml
++index d6f5a3e..c2b7e5a 100644
++--- a/azure-pipelines.yml
+++++ b/azure-pipelines.yml
++@@ -1,54 +1,86 @@
++ trigger:
++   branches:
++     include:
++       - main
++
++ variables:
++   pythonVersion: '3.12'
++   packagePath: '$(Build.ArtifactStagingDirectory)/app.zip'
++
++ pool:
++   vmImage: ubuntu-latest
++
++ stages:
++- stage: Build_Test
++  jobs:
++  - job: validate
++    steps:
++    - task: UsePythonVersion@0
++      inputs:
++        versionSpec: $(pythonVersion)
++    - script: |
++        python -m venv .venv
++        source .venv/bin/activate
++        pip install -r requirements.txt
++        python scripts/validate_static.py
++        python tests/contract/test_tooling_api_contract.py
++      displayName: Validate runtime boundaries and contract tests
++    - script: |
++        zip -r $(packagePath) . -x '.venv/*' '.git/*' 'outputs/*' 'artifacts/*' 'receipts/*'
++      displayName: Package web app
++    - publish: $(packagePath)
++      artifact: drop
++
++- stage: Deploy
++  dependsOn: Build_Test
++  condition: succeeded()
++  jobs:
++  - deployment: deploy_appservice
++    environment: cdyp7-harness
++    strategy:
++      runOnce:
++        deploy:
++          steps:
++          - download: current
++            artifact: drop
++          - task: AzureWebApp@1
++            inputs:
++              azureSubscription: '$(AZURE_SERVICE_CONNECTION)'
++              appType: webAppLinux
++              appName: '$(APP_SERVICE_NAME)'
++              package: '$(Pipeline.Workspace)/drop/app.zip'
++              runtimeStack: 'PYTHON|3.12'
++              startUpCommand: './startup.sh'
++
+++## DevSmoke stage (non-prod)
+++#+ This stage runs on the `develop` branch only and installs optional dev dependencies
++#+ then runs validation and a smoke check. It is intentionally non-blocking for main branch CI.
+++- stage: DevSmoke
+++  displayName: 'Dev: smoke and validation (non-prod)'
+++  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'develop'))
+++  jobs:
+++  - job: dev_smoke
+++    pool:
+++      vmImage: 'ubuntu-latest'
+++    steps:
+++    - task: UsePythonVersion@0
+++      inputs:
+++        versionSpec: $(pythonVersion)
+++    - powershell: pwsh ./scripts/ci_install_dev.ps1
+++      displayName: 'Install dev requirements (if present)'
+++    - script: |
+++        python -m venv .venv
+++        source .venv/bin/activate
+++        pip install -r requirements.txt -r requirements-dev.txt
+++        python scripts/validate_static.py
+++        python scripts/smoke_tooling.py
+++      displayName: 'Run dev validation & smoke (non-prod)'
++
+*** End Patch

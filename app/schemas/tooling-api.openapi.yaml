@@ -1,0 +1,34 @@
+openapi: 3.1.0
+info:
+  title: CDYP7 Runtime Harness Tooling API
+  version: 1.0.0
+paths:
+  /tools/generate-release-sheet:
+    post:
+      operationId: generateReleaseSheet
+      summary: Generate a System Release Sheet artifact
+      responses: {'200': {description: Artifact generated}}
+  /tools/validate-release-sheet:
+    post:
+      operationId: validateReleaseSheet
+      responses: {'200': {description: Artifact validated}}
+  /tools/write-receipt:
+    post:
+      operationId: writeReceipt
+      responses: {'200': {description: Receipt written}}
+  /tools/fetch-artifact:
+    post:
+      operationId: fetchArtifact
+      responses: {'200': {description: Artifact fetched}}
+  /tools/resolve-replay:
+    post:
+      operationId: resolveReplay
+      responses: {'200': {description: Replay resolved}}
+  /mcp/tools/list:
+    get:
+      operationId: mcpToolsList
+      responses: {'200': {description: MCP tools listed}}
+  /mcp/tools/call:
+    post:
+      operationId: mcpToolsCall
+      responses: {'200': {description: MCP tool executed}}

@@ -1,0 +1,15 @@
+checkpoint_id: CKPT-CDYP7-HARNESS-TOOLING-API-AZURE-001
+status: tooling_api_integrated_azure_ready
+semantic_delta: PRESENT
+domain: cdyp7-runtime-harness-tooling-api
+summary: >-
+  Integrates the CDYP7 Harness Tooling API into the FastAPI web app with MCP tools/list and tools/call,
+  REST tool endpoints, Azure Blob Storage-backed artifacts and receipts, Key Vault config binding,
+  Azure DevOps pipeline, Bicep and Terraform infrastructure, and contract tests.
+production_baseline: not_accepted
+promotion_gate: azure_devops_pipeline_passes_and_managed_identity_blob_rbac_verified
+authority: execution_and_evidence_only
+release_approval_authority: false
+repository_mutation_authority: false
+hitl_resolution_authority: false
+policy_decision_authority: false

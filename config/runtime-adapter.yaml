@@ -1,0 +1,51 @@
+tooling_api:
+  name: cdyp7-runtime-harness
+  version: v1.0.0
+  authority:
+    allowed:
+      - artifact_generation
+      - artifact_storage
+      - receipt_emission
+      - schema_validation
+      - deterministic_replay_resolution
+    explicitly_not:
+      - release_approval
+      - repository_mutation
+      - hitl_resolution
+      - policy_decision
+      - requirement_authoring
+tools:
+  namespace: harness
+  mode: strict
+  on_violation: fail_closed
+  exposed:
+    - harness.generate_release_sheet
+    - harness.validate_release_sheet
+    - harness.write_receipt
+    - harness.fetch_artifact
+    - harness.resolve_replay
+azure:
+  blob:
+    artifacts_container: artifacts
+    receipts_container: receipts
+    templates_container: templates
+    storage_account_url_env: AZURE_STORAGE_ACCOUNT_URL
+  key_vault:
+    uri_env: AZURE_KEY_VAULT_URI
+    enabled_env: AZURE_KEY_VAULT_ENABLED
+release_sheet_generator:
+  authority: documentation_artifact_only
+  approve_release: false
+  infer_missing_values: false
+  sign_for_approvers: false
+  commit_directly_to_repository: false
+  bypass_hitl: false
+  mutate_source_systems: false
+replay:
+  reuse_cached_context: true
+  rerun_retrieval: false
+  require_cache_hit: true
+  on_cache_miss: fail_closed
+schema_validation:
+  ingress: { enabled: true, on_violation: fail_closed }
+  egress: { enabled: true, on_violation: fail_closed }

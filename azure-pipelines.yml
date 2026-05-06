@@ -1,0 +1,74 @@
+trigger:
+  branches:
+    include:
+      - main
+
+variables:
+  pythonVersion: '3.12'
+  packagePath: '$(Build.ArtifactStagingDirectory)/app.zip'
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: DevSmoke
+  displayName: 'Dev: smoke and validation (non-prod)'
+  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'develop'))
+  jobs:
+  - job: dev_smoke
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: $(pythonVersion)
+    - powershell: pwsh ./scripts/ci_install_dev.ps1
+      displayName: 'Install dev requirements (if present)'
+    - script: |
+        python -m venv .venv
+        source .venv/bin/activate
+        pip install -r requirements.txt -r requirements-dev.txt
+        python scripts/validate_static.py
+        python scripts/smoke_tooling.py
+      displayName: 'Run dev validation & smoke (non-prod)'
+
+- stage: Build_Test
+  jobs:
+  - job: validate
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: $(pythonVersion)
+    - script: |
+        python -m venv .venv
+        source .venv/bin/activate
+        pip install -r requirements.txt
+        python scripts/validate_static.py
+        python tests/contract/test_tooling_api_contract.py
+      displayName: Validate runtime boundaries and contract tests
+    - script: |
+        zip -r $(packagePath) . -x '.venv/*' '.git/*' 'outputs/*' 'artifacts/*' 'receipts/*'
+      displayName: Package web app
+    - publish: $(packagePath)
+      artifact: drop
+
+- stage: Deploy
+  dependsOn: Build_Test
+  condition: succeeded()
+  jobs:
+  - deployment: deploy_appservice
+    environment: cdyp7-harness
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: '$(AZURE_SERVICE_CONNECTION)'
+              appType: webAppLinux
+              appName: '$(APP_SERVICE_NAME)'
+              package: '$(Pipeline.Workspace)/drop/app.zip'
+              runtimeStack: 'PYTHON|3.12'
+              startUpCommand: './startup.sh'

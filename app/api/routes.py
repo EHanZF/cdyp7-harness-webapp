@@ -69,7 +69,7 @@ def mcp_tools_call(env: ToolEnvelope):
     except Exception as exc:
         raise HTTPException(
             status_code=400, detail={"error": "tool_call_failed", "message": str(exc), "fail_closed": True}
-        )
+        ) from exc
 
 
 @router.post("/tools/generate-release-sheet")
@@ -80,7 +80,7 @@ def generate_release_sheet(payload: GenerateReleaseSheetToolRequest, request: Re
     except Exception as exc:
         raise HTTPException(
             status_code=400, detail={"error": "generate_release_sheet_failed", "message": str(exc), "fail_closed": True}
-        )
+        ) from exc
 
 
 @router.post("/tools/validate-release-sheet")
@@ -90,7 +90,7 @@ def validate_release_sheet(payload: ValidateReleaseSheetToolRequest):
     except Exception as exc:
         raise HTTPException(
             status_code=400, detail={"error": "validate_release_sheet_failed", "message": str(exc), "fail_closed": True}
-        )
+        ) from exc
 
 
 @router.post("/tools/write-receipt")
@@ -100,7 +100,7 @@ def write_receipt(payload: WriteReceiptToolRequest, request: Request):
     except Exception as exc:
         raise HTTPException(
             status_code=400, detail={"error": "write_receipt_failed", "message": str(exc), "fail_closed": True}
-        )
+        ) from exc
 
 
 @router.post("/tools/fetch-artifact")

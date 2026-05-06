@@ -48,7 +48,7 @@ def test_write_receipt_tool_request_contract_loads():
     assert request.event_type == "x"
     assert request.actor == "user@example.com"
     assert request.artifact_id == "a"
-    assert request.sha256.startswith("sha256:")
+    assert str(request.sha256).startswith("sha256:")
 
 
 def test_fetch_artifact_tool_request_contract_loads():

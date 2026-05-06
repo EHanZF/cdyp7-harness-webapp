@@ -1,3 +1,5 @@
+# pylint: disable=too-many-return-statements
+
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Request

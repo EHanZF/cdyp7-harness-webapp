@@ -35,6 +35,9 @@ addopts = [
 py-version = "3.11"
 recursive = true
 
+[tool.pylint.format]
+max-line-length = 120
+
 [tool.pylint.messages_control]
 disable = [
   "missing-module-docstring",
@@ -43,10 +46,16 @@ disable = [
   "too-few-public-methods"
 ]
 
-[tool.pylint.format]
-max-line-length = 100
-
 [tool.pylint.design]
 max-args = 8
 max-locals = 20
 max-branches = 15
+
+[tool.coverage.run]
+source = ["app"]
+omit = [
+  ".venv/*",
+  "*/site-packages/*",
+  "tests/*",
+  "__pycache__/*"
+]

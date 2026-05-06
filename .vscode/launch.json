@@ -2,8 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+<<<<<<< HEAD
       "name": "CDYP7 API - FastAPI/Uvicorn stable",
       "type": "python",
+=======
+      "name": "CDYP7 API - FastAPI/Uvicorn",
+      "type": "debugpy",
+>>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)
       "request": "launch",
       "module": "uvicorn",
       "args": [
@@ -13,18 +18,29 @@
         "--port",
         "8000"
       ],
+<<<<<<< HEAD
       "console": "internalConsole",
+=======
+>>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)
       "jinja": true,
       "justMyCode": false,
       "env": {
         "PYTHONPATH": "${workspaceFolder}",
+<<<<<<< HEAD
         "ENABLE_MCP_UI": "true",
         "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
+=======
+        "ENABLE_MCP_UI": "true"
+>>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)
       }
     },
     {
       "name": "CDYP7 API - FastAPI/Uvicorn reload",
+<<<<<<< HEAD
       "type": "python",
+=======
+      "type": "debugpy",
+>>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)
       "request": "launch",
       "module": "uvicorn",
       "args": [
@@ -40,6 +56,7 @@
       "subProcess": true,
       "env": {
         "PYTHONPATH": "${workspaceFolder}",
+<<<<<<< HEAD
         "ENABLE_MCP_UI": "true",
         "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
       }
@@ -133,3 +150,10 @@
     }
   ]
 }
+=======
+        "ENABLE_MCP_UI": "true"
+      }
+    }
+  ]
+}
+>>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)

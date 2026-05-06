@@ -70,6 +70,7 @@ def mcp_tools_call(env: ToolEnvelope):
         raise HTTPException(
             status_code=400, detail={"error": "tool_call_failed", "message": str(exc), "fail_closed": True}
         ) from exc
+<<<<<<< HEAD
 
 
 @router.post("/tools/generate-release-sheet")
@@ -198,6 +199,8 @@ def mcp_tools_call(env: ToolEnvelope):
         raise HTTPException(
             status_code=400, detail={"error": "tool_call_failed", "message": str(exc), "fail_closed": True}
         )
+=======
+>>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)
 
 
 @router.post("/tools/generate-release-sheet")
@@ -208,7 +211,7 @@ def generate_release_sheet(payload: GenerateReleaseSheetToolRequest, request: Re
     except Exception as exc:
         raise HTTPException(
             status_code=400, detail={"error": "generate_release_sheet_failed", "message": str(exc), "fail_closed": True}
-        )
+        ) from exc
 
 
 @router.post("/tools/validate-release-sheet")
@@ -218,7 +221,7 @@ def validate_release_sheet(payload: ValidateReleaseSheetToolRequest):
     except Exception as exc:
         raise HTTPException(
             status_code=400, detail={"error": "validate_release_sheet_failed", "message": str(exc), "fail_closed": True}
-        )
+        ) from exc
 
 
 @router.post("/tools/write-receipt")
@@ -228,7 +231,7 @@ def write_receipt(payload: WriteReceiptToolRequest, request: Request):
     except Exception as exc:
         raise HTTPException(
             status_code=400, detail={"error": "write_receipt_failed", "message": str(exc), "fail_closed": True}
-        )
+        ) from exc
 
 
 @router.post("/tools/fetch-artifact")

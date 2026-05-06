@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # pylint: disable=too-many-return-statements
 
 from typing import Any
@@ -8,7 +8,7 @@ from fastapi import APIRouter, Header, HTTPException, Request
 from typing import Any
 
 from fastapi import APIRouter, Body, Header, HTTPException, Request
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)
+
 
 router = APIRouter()
 

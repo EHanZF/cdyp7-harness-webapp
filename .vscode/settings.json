@@ -1,14 +1,9 @@
 {
     "python.testing.pytestArgs": [
-<<<<<<< HEAD
         "tests"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.terminal.activateEnvironment": true,
-    "python.terminal.useEnvFile": true,
-    "python.envFile": "${workspaceFolder}/.env",
-
     "makefile.makefilePath": "C:\\Users\\z0190004\\ZF_Braking_Agent\\cdyp7-harness-tooling-api-azure-webapp",
     "makefile.buildLog": "C:\\Users\\z0190004\\ZF_Braking_Agent\\cdyp7-harness-tooling-api-azure-webapp",
 
@@ -16,12 +11,3 @@
     "flake8.importStrategy": "fromEnvironment",
     "flake8.args": []
 }
-=======
-        "."
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "makefile.makefilePath": "C:\\Users\\z0190004\\ZF_Braking_Agent\\cdyp7-harness-tooling-api-azure-webapp",
-    "makefile.buildLog": "C:\\Users\\z0190004\\ZF_Braking_Agent\\cdyp7-harness-tooling-api-azure-webapp"
-}
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)

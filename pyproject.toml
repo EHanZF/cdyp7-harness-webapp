@@ -9,7 +9,10 @@ requires-python = ">=3.11"
 dependencies = [
   "fastapi",
   "uvicorn[standard]",
+<<<<<<< HEAD
   "python-multipart",
+=======
+>>>>>>> b0f8b70 (Add tooling API contract tests and validation output)
   "python-docx"
 ]
 
@@ -20,9 +23,13 @@ dev = [
   "jsonschema",
   "fastapi",
   "httpx",
+<<<<<<< HEAD
   "pydantic",
   "python-multipart",
   "debugpy"
+=======
+  "pydantic"
+>>>>>>> b0f8b70 (Add tooling API contract tests and validation output)
 ]
 
 [tool.pytest.ini_options]
@@ -38,9 +45,12 @@ addopts = [
 py-version = "3.11"
 recursive = true
 
+<<<<<<< HEAD
 [tool.pylint.format]
 max-line-length = 120
 
+=======
+>>>>>>> b0f8b70 (Add tooling API contract tests and validation output)
 [tool.pylint.messages_control]
 disable = [
   "missing-module-docstring",
@@ -49,6 +59,7 @@ disable = [
   "too-few-public-methods"
 ]
 
+<<<<<<< HEAD
 [tool.pylint.design]
 max-args = 8
 max-locals = 20
@@ -65,3 +76,12 @@ omit = [
 
 [tool.setuptools.packages.find]
 where = ["app"]
+=======
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint.design]
+max-args = 8
+max-locals = 20
+max-branches = 15
+>>>>>>> b0f8b70 (Add tooling API contract tests and validation output)

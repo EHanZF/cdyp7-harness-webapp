@@ -426,4 +426,8 @@ new file mode 100644
 ++        python scripts/smoke_tooling.py
 ++      displayName: 'Run dev validation & smoke (non-prod)'
 +
+<<<<<<< HEAD
 *** End Patch
+=======
+*** End Patch
+>>>>>>> b0f8b70 (Add tooling API contract tests and validation output)

@@ -122,4 +122,8 @@
       }
     }
   ]
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> b0f8b70 (Add tooling API contract tests and validation output)

@@ -56,4 +56,8 @@ git push origin feat/dev-helpers
 
 Open a PR with the title in `PR_TITLE.txt` and the body in `PR_BODY.md`.
 
+<<<<<<< HEAD
 If you prefer, I can initialize a temporary git branch in this workspace and commit the changes for you — say “init & push” with the remote URL and I will proceed (requires remote/credentials).
+=======
+If you prefer, I can initialize a temporary git branch in this workspace and commit the changes for you — say “init & push” with the remote URL and I will proceed (requires remote/credentials).
+>>>>>>> b0f8b70 (Add tooling API contract tests and validation output)

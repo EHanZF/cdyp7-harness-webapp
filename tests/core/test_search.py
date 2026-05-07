@@ -41,8 +41,26 @@ def test_search_returns_top_result(tmp_path, monkeypatch):
     monkeypatch.setattr(search, "VECSTORE_PATH", path)
     # mock embeddings to ensure query maps to first vector
     monkeypatch.setattr(search, "embed_texts", lambda texts: [[1.0, 0.0]])
+    # mock file metadata
+    monkeypatch.setattr(
+        search,
+        "get_file_entry",
+        lambda fid: {
+            "id": fid,
+            "blob_uri": f"file://artifacts/{fid}.docx",
+            "container": "artifacts",
+            "blob_name": f"{fid}.docx",
+            "filename": f"{fid}.docx",
+            "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "uploaded_by": "tester",
+            "uploaded_at": "2026-05-07T00:00:00Z",
+            "tags": {"program": "CDYP7"},
+        },
+    )
 
     results = search.search("hello", limit=2)
     assert len(results) >= 1
     assert results[0]["id"] == "f1:0"
     assert results[0]["score"] == pytest.approx(1.0, rel=1e-6)
+    assert "file" in results[0]
+    assert results[0]["file"]["filename"] == "f1.docx"

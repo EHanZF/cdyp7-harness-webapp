@@ -33,6 +33,19 @@
   <button class="btn" onclick="startIngest()">Ingest selected</button>
   <div id="files"></div>
 
+  <h2>Search</h2>
+  <div class="row">
+    <input id="searchQuery" placeholder="Enter search query" style="flex:1;padding:8px;border:1px solid #d1e3f8;border-radius:6px" />
+    <button class="btn" onclick="doSearch()">Search</button>
+  </div>
+  <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+    <input id="filterTags" placeholder="tags (k:v,comma-separated)" style="flex:1;padding:6px;border:1px solid #eef6ff;border-radius:6px" />
+    <input id="filterMinScore" placeholder="min score" style="width:120px;padding:6px;border:1px solid #eef6ff;border-radius:6px" />
+    <input id="filterAfter" type="date" title="uploaded after" style="width:160px;padding:6px;border:1px solid #eef6ff;border-radius:6px" />
+    <input id="filterBefore" type="date" title="uploaded before" style="width:160px;padding:6px;border:1px solid #eef6ff;border-radius:6px" />
+  </div>
+  <div id="searchResults" style="margin-top:12px"></div>
+
   <h2>Ingest Jobs</h2>
   <div id="jobs"></div>
 
@@ -84,6 +97,66 @@
       el.innerText = JSON.stringify(j.job, null, 2);
       if(j.job && (j.job.status === 'running')){ setTimeout(()=>pollJob(jobId), 2000) }
     }
+
+    function _escapeHtml(s){
+      if(!s) return '';
+      return String(s)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+
+    async function doSearch(){
+      const q = document.getElementById('searchQuery').value.trim();
+      const container = document.getElementById('searchResults');
+      if(!q){ container.innerHTML = '<p class="muted">Enter a query to search uploaded files.</p>'; return }
+      container.innerHTML = 'Searching...';
+      try{
+        // build filter payload
+        const tagsRaw = document.getElementById('filterTags').value.trim();
+        const minScore = document.getElementById('filterMinScore').value.trim();
+        const after = document.getElementById('filterAfter').value;
+        const before = document.getElementById('filterBefore').value;
+        const tags = {};
+        if(tagsRaw){
+          for(const part of tagsRaw.split(',')){
+            const [k,v] = part.split(':').map(s=>s&&s.trim());
+            if(k){ tags[k] = v===undefined?null:v }
+          }
+        }
+
+        const payload = { query: q, limit: 20, filters: {} };
+        if(Object.keys(tags).length) payload.filters.tags = tags;
+        if(minScore) payload.filters.min_score = parseFloat(minScore);
+        if(after) payload.filters.uploaded_after = new Date(after).toISOString();
+        if(before) payload.filters.uploaded_before = new Date(before).toISOString();
+
+        const res = await fetch('/api/search', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+        if(!res.ok){ container.innerHTML = '<p class="muted">Search failed: ' + res.status + '</p>'; return }
+        const j = await res.json();
+        const results = j.results || [];
+        if(results.length === 0){ container.innerHTML = '<p class="muted">No results</p>'; return }
+        let html = '<table><tr><th>filename</th><th>snippet</th><th>score</th><th>uploaded_at</th><th>download</th></tr>';
+        for(const r of results){
+          const file = r.file || {};
+          const filename = file.filename || file.blob_name || r.id || '';
+          const snippet = _escapeHtml(r.text || '');
+          const score = (typeof r.score !== 'undefined') ? Number(r.score).toFixed(4) : '';
+          const uploaded_at = file.uploaded_at || '';
+          const download = file.blob_uri ? '<a href="' + _escapeHtml(file.blob_uri) + '" target="_blank">download</a>' : (file.id ? '<a href="/api/files/' + _escapeHtml(file.id) + '" target="_blank">download</a>' : '');
+          html += '<tr><td>' + _escapeHtml(filename) + '</td><td style="max-width:50ch;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + snippet + '</td><td>' + score + '</td><td>' + _escapeHtml(uploaded_at) + '</td><td>' + download + '</td></tr>';
+        }
+        html += '</table>';
+        container.innerHTML = html;
+      }catch(e){
+        container.innerHTML = '<p class="muted">Search error</p>';
+        console.error(e);
+      }
+    }
+
+    document.getElementById('searchQuery').addEventListener('keyup', function(e){ if(e.key === 'Enter'){ doSearch() } });
 
     // initial load
     refreshFiles();

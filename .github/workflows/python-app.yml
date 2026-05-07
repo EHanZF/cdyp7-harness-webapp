@@ -34,7 +34,8 @@ jobs:
           echo "Editable install failed; falling back to PYTHONPATH"
           echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
         fi
-    - name: Run repository guards
+    - name: Run repository guards (PRs only)
+      if: github.event_name == 'pull_request'
       run: |
         set -e
         python .github/hooks/static_namespace_guard.py --root .

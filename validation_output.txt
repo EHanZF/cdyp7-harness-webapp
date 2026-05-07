@@ -1,0 +1,13 @@
+MEMORY_STATIC_EXIT=0
+STDOUT:
+OK memory layer static assertions
+
+STDERR:
+
+
+MEMORY_NEGATIVE_EXIT=0
+STDOUT:
+OK memory guardrail negative tests
+
+STDERR:
+

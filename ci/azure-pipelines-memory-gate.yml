@@ -1,0 +1,18 @@
+# Add this job to the Build_Test stage before deployment.
+
+jobs:
+- job: memory_layer_validation
+  displayName: Validate memory hooks, schemas, and negative tests
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.12'
+    - script: |
+        python -m venv .venv
+        source .venv/bin/activate
+        pip install jsonschema PyYAML
+        python scripts/validate_memory_layer.py
+        python tests/memory/test_memory_guardrails.py
+      displayName: Memory layer static and negative tests

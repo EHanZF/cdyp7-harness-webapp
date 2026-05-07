@@ -1,0 +1,14 @@
+checkpoint_id: CKPT-CDYP7-MEMORY-HOOKS-INTEGRATION-001
+status: memory_hooks_integration_packaged
+semantic_delta: PRESENT
+domain: cdyp7-runtime-harness-memory
+summary: >-
+  Adds runtime-adapter memory extension, episodic/semantic/hook schemas, memory guardrails,
+  MCP memory tool handlers, negative memory poisoning/drift tests, Azure Container Apps Job spec,
+  and Azure DevOps memory validation gate.
+production_baseline: not_accepted
+authority: operational_memory_signals_only
+memory_as_evidence: false
+memory_as_authority: false
+runtime_memory_writes_allowed: false
+hook_direct_actions_allowed: false

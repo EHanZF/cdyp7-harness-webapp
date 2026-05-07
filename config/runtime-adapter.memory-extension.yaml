@@ -1,0 +1,116 @@
+# CDYP7 Runtime Adapter Memory Extension
+# Merge this into the locked runtime-adapter.yaml without changing existing keys.
+
+memory:
+  enabled: true
+
+  nvram:
+    type: episodic
+    durability: append_only
+    storage: blob
+    immutability: true
+    write_policy:
+      writer: orchestrator_only
+      timing: end_of_run
+    schema: agent-memory/episodic.schema.json
+
+  semantic:
+    type: curated
+    storage: blob
+    read_only_at_runtime: true
+    write_policy:
+      writer: memory_curator_job
+      approval_required: true
+    schema: agent-memory/semantic.schema.json
+
+  procedural:
+    enabled: true
+    storage: repo
+    versioned: true
+    read_only_at_runtime: true
+
+memory_hooks:
+  enabled: true
+  evaluation_mode: post_curation_only
+  hooks:
+    - id: repeat_lifecycle_conflict
+      source: semantic
+      condition:
+        type: pattern_frequency
+        pattern: lifecycle_status_conflict
+        threshold: 3
+        window_days: 30
+      action:
+        emit_webhook:
+          name: engineering-review
+          payload:
+            domain: "{{domain}}"
+            pattern_id: "{{pattern_id}}"
+            occurrences: "{{count}}"
+            last_seen_run: "{{run_id}}"
+
+    - id: confidence_drift_detected
+      source: episodic
+      condition:
+        type: confidence_mode_shift
+        from: deterministic_grounded
+        to: grounded_with_conflict
+        threshold: 2
+      action:
+        emit_webhook:
+          name: stl-attention
+          payload:
+            domain: "{{domain}}"
+            drift_type: confidence_regression
+            recent_runs: "{{run_ids}}"
+
+    - id: repeated_insufficient_evidence
+      source: episodic
+      condition:
+        type: confidence_mode_frequency
+        confidence_mode: insufficient_authoritative_evidence
+        threshold: 5
+        window_days: 14
+      action:
+        emit_webhook:
+          name: data-gap-review
+          payload:
+            domain: "{{domain}}"
+            issue: missing_authoritative_evidence
+            runs: "{{run_ids}}"
+
+memory_guardrails:
+  forbid_runtime_writes: true
+  forbid_agent_direct_writes: true
+  forbid_memory_as_evidence: true
+  forbid_memory_as_authority: true
+
+memory_curation_job:
+  id: agent-memory-curator
+  schedule: "0 2 * * *"
+  runtime: azure_container_app_job
+  image: memory/curator:v1.0.0
+  responsibilities:
+    - consolidate_episodic_to_semantic
+    - deduplicate_patterns
+    - decay_stale_entries
+    - garbage_collect_expired_episodes
+    - evaluate_memory_hooks
+  garbage_collection:
+    episodic:
+      retain_days: 365
+      retain_if:
+        - referenced_by_replay
+        - referenced_by_open_governance_event
+    semantic:
+      decay_rules:
+        - if_not_confirmed_in_days: 60
+          action: mark_deprecated
+        - if_not_confirmed_in_days: 120
+          action: delete
+  curation_output:
+    emits:
+      - semantic_memory_update
+      - deprecated_pattern_notice
+      - hook_trigger_event
+    requires_human_approval: true

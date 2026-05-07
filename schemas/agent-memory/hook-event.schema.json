@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agent-memory/hook-event.schema.json",
+  "title": "CDYP7 Memory Hook Event",
+  "type": "object",
+  "required": [
+    "event_type",
+    "hook_id",
+    "domain",
+    "webhook_name",
+    "payload",
+    "timestamp_utc"
+  ],
+  "properties": {
+    "event_type": {
+      "const": "memory_hook_triggered"
+    },
+    "hook_id": {
+      "type": "string"
+    },
+    "domain": {
+      "enum": [
+        "brakes",
+        "steering"
+      ]
+    },
+    "webhook_name": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

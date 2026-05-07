@@ -1,0 +1,102 @@
+[
+  {
+    "path": "README.md",
+    "sha256": "12cbc50fd476345d9b96234ae7a1347ea3d7952fe04b9893750465cd76e29f14",
+    "bytes": 680
+  },
+  {
+    "path": "app/mcp/memory_tools.py",
+    "sha256": "74a60efedb72dddadc873d9f7e17d8918ed75f59d51b646d123cbbf4d213d819",
+    "bytes": 914
+  },
+  {
+    "path": "app/memory/__pycache__/guardrails.cpython-312.pyc",
+    "sha256": "1eec015a669aa7221ab349d5dde903495817f07b0702da1a23a2e2e3d0a7016c",
+    "bytes": 2302
+  },
+  {
+    "path": "app/memory/__pycache__/hooks.cpython-312.pyc",
+    "sha256": "2c208693323b3c23463d399e95a25a5721241fdb59115c6e0592abdd974de89f",
+    "bytes": 1577
+  },
+  {
+    "path": "app/memory/guardrails.py",
+    "sha256": "fd3091dda5b1f54ae2d3f1e912222a5d269cb6bbae6c2b00e346f2ab84f9bed1",
+    "bytes": 1437
+  },
+  {
+    "path": "app/memory/hooks.py",
+    "sha256": "fc703799cb747dfb947e95c3db70b26209ac81ecb7e62f6476eecb9ac6bde6e0",
+    "bytes": 1218
+  },
+  {
+    "path": "checkpoints/CKPT-CDYP7-MEMORY-HOOKS-INTEGRATION-001.yaml",
+    "sha256": "8efc09ac45a71fe64c140399bb792abc50a47f9f8855c107ae25ab7d14508205",
+    "bytes": 605
+  },
+  {
+    "path": "ci/azure-pipelines-memory-gate.yml",
+    "sha256": "7eafd588cb3e1111d73d2bde9b0f904f00d6eb8cb448cd4dc947e615c7e53ec2",
+    "bytes": 556
+  },
+  {
+    "path": "ci/memory-curation-job.azure-container-app-job.yaml",
+    "sha256": "262359c135f0390a46f8589f154a38e220e1285b5c3144194b4947dcf17cdff4",
+    "bytes": 768
+  },
+  {
+    "path": "config/runtime-adapter.memory-extension.yaml",
+    "sha256": "7403ffcdc0a23ae9f94557aa30f0d1f570c5e06452ed179b1097cf74e03c6abd",
+    "bytes": 2982
+  },
+  {
+    "path": "docs/MEMORY_HOOKS.md",
+    "sha256": "4fa28574adbf512b06dd9b29d1e090c1bfa157e88c4f37877849f25b280292c6",
+    "bytes": 1157
+  },
+  {
+    "path": "examples/episodic-memory-entry.json",
+    "sha256": "38f1fd7abc4d63fba34b771f049a8e97ab177bfdeca62c160c83d59e015305c6",
+    "bytes": 481
+  },
+  {
+    "path": "examples/semantic-memory-entry.json",
+    "sha256": "b88697ce54e08285c2840321227642ec6aac73f6e3b104ad87a5276e959cb63d",
+    "bytes": 530
+  },
+  {
+    "path": "schemas/agent-memory/episodic.schema.json",
+    "sha256": "50915367db6830dcb3906935c43a40005f26dcfce714152b9c2e46926cdfbc9e",
+    "bytes": 1434
+  },
+  {
+    "path": "schemas/agent-memory/hook-event.schema.json",
+    "sha256": "8bec43a6214d480cc5f12be4dbb6f39146e8767b805d1e2ff6c206893cdfbbb7",
+    "bytes": 761
+  },
+  {
+    "path": "schemas/agent-memory/semantic.schema.json",
+    "sha256": "811004124e220a13dea29ca8b09d56f53ff227d06dad9055d9347cb398f321e3",
+    "bytes": 1487
+  },
+  {
+    "path": "scripts/validate_memory_layer.py",
+    "sha256": "ff567a362a6ad0f031a1c141a89ff58921cbb71796f8d1b0c83cbf3b1118bda0",
+    "bytes": 1066
+  },
+  {
+    "path": "tests/memory/negative-memory-tests.yaml",
+    "sha256": "c93f740c615cff5dd666d4acdb139a054e4c08b2f22bd187ff514242712c5294",
+    "bytes": 1122
+  },
+  {
+    "path": "tests/memory/test_memory_guardrails.py",
+    "sha256": "50cdef97ac54479b96479834af5d7614f06b2e5dd28d2aa0e111710cae983b62",
+    "bytes": 1091
+  },
+  {
+    "path": "validation_output.txt",
+    "sha256": "bdbcc73a39045909dc943b816f91568d25f5ae267902864a864c5c6a027780e4",
+    "bytes": 150
+  }
+]

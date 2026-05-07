@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api.mcp_routes import router as mcp_router
 from app.api.routes import router
+from app.api.dashboard import router as dashboard_router
 from app.core.config import assert_adapter, load_adapter
 
 # Safety guard: in production we require Azure storage to be configured so the
@@ -23,6 +24,7 @@ assert_adapter(adapter)
 app.state.adapter = adapter
 app.include_router(router)
 app.include_router(mcp_router)
+app.include_router(dashboard_router)
 STATIC = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
 

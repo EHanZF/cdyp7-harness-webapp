@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CDYP7 Dashboard</title>
+  <style>
+    body{font-family:Segoe UI,Arial,Helvetica,sans-serif;background:#ffffff;color:#0f172a;padding:24px}
+    .btn{background:#005ea6;color:white;border:0;border-radius:6px;padding:8px 12px;cursor:pointer}
+    .muted{color:#6b7280}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{border:1px solid #e6eef8;padding:8px;text-align:left}
+    input[type=file]{display:block}
+    .row{display:flex;gap:12px;align-items:center}
+  </style>
+</head>
+<body>
+  <h1>CDYP7 — File Dashboard</h1>
+  <p class="muted">Upload files, tag metadata, and run RAG ingestion (embeddings).</p>
+
+  <div>
+    <label>Actor email: <input id="actor" value="dashboard.user@example.com"></label>
+  </div>
+
+  <h2>Upload</h2>
+  <form id="uploadForm">
+    <input type="file" id="file" name="file" />
+    <button class="btn" type="submit">Upload</button>
+  </form>
+  <div id="uploadStatus" class="muted"></div>
+
+  <h2>Files</h2>
+  <button class="btn" onclick="refreshFiles()">Refresh list</button>
+  <button class="btn" onclick="startIngest()">Ingest selected</button>
+  <div id="files"></div>
+
+  <h2>Ingest Jobs</h2>
+  <div id="jobs"></div>
+
+  <script>
+    async function refreshFiles(){
+      const res = await fetch('/api/files');
+      const json = await res.json();
+      const files = json.files || [];
+      const container = document.getElementById('files');
+      if(files.length===0){ container.innerHTML = '<p class="muted">No files uploaded yet.</p>'; return }
+      let html = '<table><tr><th></th><th>filename</th><th>size</th><th>uploaded_by</th><th>download</th></tr>';
+      for(const f of files){
+        html += `<tr><td><input type="checkbox" data-id="${f.id}"></td><td>${f.filename}</td><td>${f.size}</td><td>${f.uploaded_by}</td><td><a href="/api/files/${f.id}" target="_blank">download</a></td></tr>`;
+      }
+      html += '</table>';
+      container.innerHTML = html;
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const f = document.getElementById('file').files[0];
+      if(!f) return;
+      const form = new FormData(); form.append('file', f);
+      const actor = document.getElementById('actor').value || 'dashboard.user@example.com';
+      document.getElementById('uploadStatus').textContent = 'Uploading...';
+      const res = await fetch('/api/files/upload', { method: 'POST', body: form, headers: { 'x-actor': actor } });
+      const j = await res.json();
+      document.getElementById('uploadStatus').textContent = JSON.stringify(j);
+      await refreshFiles();
+    });
+
+    async function startIngest(){
+      const actor = document.getElementById('actor').value || 'dashboard.user@example.com';
+      const boxes = Array.from(document.querySelectorAll('#files input[type=checkbox]:checked'));
+      const ids = boxes.map(b=>b.dataset.id);
+      if(ids.length===0){ alert('Select files to ingest'); return }
+      const res = await fetch('/api/ingest', { method: 'POST', headers: {'Content-Type':'application/json','x-actor': actor }, body: JSON.stringify({ file_ids: ids }) });
+      const j = await res.json();
+      const jobId = j.job_id;
+      document.getElementById('jobs').innerText = 'Started job ' + jobId;
+      pollJob(jobId);
+    }
+
+    async function pollJob(jobId){
+      const el = document.getElementById('jobs');
+      const res = await fetch('/api/ingest/' + jobId + '/status');
+      if(res.status===404){ el.innerText = 'job not found'; return }
+      const j = await res.json();
+      el.innerText = JSON.stringify(j.job, null, 2);
+      if(j.job && (j.job.status === 'running')){ setTimeout(()=>pollJob(jobId), 2000) }
+    }
+
+    // initial load
+    refreshFiles();
+  </script>
+</body>
+</html>

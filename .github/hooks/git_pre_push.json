@@ -1,0 +1,6 @@
+{
+  "event": "GitPrePush",
+  "behavior": "warn_locally_block_in_ci",
+  "script": "scripts/hooks/pre_push_validate.ps1",
+  "description": "Run tests and semantic lint; block in CI if failures"
+}

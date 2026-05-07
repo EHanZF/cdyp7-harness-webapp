@@ -1,0 +1,6 @@
+{
+  "event": "SessionEnd",
+  "behavior": "inject_summary_and_log",
+  "script": "scripts/hooks/session_end.ps1",
+  "description": "Persist task summary, open gaps and write checkpoint if requested"
+}

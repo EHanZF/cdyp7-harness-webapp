@@ -1,0 +1,6 @@
+{
+  "event": "SessionStart",
+  "behavior": "inject_context",
+  "script": "scripts/hooks/session_start.ps1",
+  "description": "Inject session metadata, enforce storage env in production, emit correlation_id"
+}

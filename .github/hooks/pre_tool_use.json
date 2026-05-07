@@ -1,0 +1,6 @@
+{
+  "event": "PreToolUse",
+  "behavior": "block_or_require_approval",
+  "script": "scripts/hooks/pre_tool_use.ps1",
+  "description": "Scan tool params for forbidden patterns and flag ALM mutations for approval"
+}

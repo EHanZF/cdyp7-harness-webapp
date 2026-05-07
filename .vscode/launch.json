@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "CDYP7 API - FastAPI/Uvicorn",
+      "name": "CDYP7 API - FastAPI/Uvicorn stable",
       "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
@@ -13,11 +13,13 @@
         "--port",
         "8000"
       ],
+      "console": "internalConsole",
       "jinja": true,
       "justMyCode": false,
       "env": {
         "PYTHONPATH": "${workspaceFolder}",
-        "ENABLE_MCP_UI": "true"
+        "ENABLE_MCP_UI": "true",
+        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
       }
     },
     {
@@ -40,6 +42,22 @@
         "PYTHONPATH": "${workspaceFolder}",
         "ENABLE_MCP_UI": "true"
       }
+    },
+    {
+      "name": "CDYP7 API - Attach to debugpy",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "127.0.0.1",
+        "port": 5678
+      },
+      "justMyCode": false,
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "${workspaceFolder}"
+        }
+      ]
     }
   ]
 }

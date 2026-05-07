@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-docx
+
+[dev]
+pytest
+pylint
+jsonschema
+fastapi
+httpx
+pydantic

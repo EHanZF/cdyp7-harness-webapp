@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: mcp-intent-boundary
+Version: 0.1.0
+Requires-Python: >=3.11
+Requires-Dist: fastapi
+Requires-Dist: uvicorn[standard]
+Requires-Dist: python-docx
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pylint; extra == "dev"
+Requires-Dist: jsonschema; extra == "dev"
+Requires-Dist: fastapi; extra == "dev"
+Requires-Dist: httpx; extra == "dev"
+Requires-Dist: pydantic; extra == "dev"

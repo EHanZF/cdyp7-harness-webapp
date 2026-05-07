@@ -44,6 +44,74 @@
       }
     },
     {
+      "name": "CDYP7 API - FastAPI (debugpy listen 127.0.0.1:5678 - no-wait)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "debugpy",
+      "args": [
+        "--listen",
+        "127.0.0.1:5678",
+        "--module",
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000"
+      ],
+      "console": "integratedTerminal",
+      "jinja": true,
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "ENABLE_MCP_UI": "true"
+      }
+    },
+    {
+      "name": "CDYP7 API - FastAPI (debugpy 8000)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "debugpy",
+      "args": [
+        "--listen",
+        "127.0.0.1:5678",
+        "--module",
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000"
+      ],
+      "console": "integratedTerminal",
+      "jinja": true,
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "ENABLE_MCP_UI": "true"
+      }
+    },
+    {
+      "name": "CDYP7 API - FastAPI (quick run)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "app.main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000"
+      ],
+      "console": "integratedTerminal",
+      "jinja": true,
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "ENABLE_MCP_UI": "true"
+      }
+    },
+    {
       "name": "CDYP7 API - Attach to debugpy",
       "type": "debugpy",
       "request": "attach",

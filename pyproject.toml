@@ -20,8 +20,8 @@ dev = [
   "jsonschema",
   "fastapi",
   "httpx",
-  "pydantic"
-  "python-multipart",
+  "pydantic",
+  "python-multipart"
 ]
 
 [tool.pytest.ini_options]

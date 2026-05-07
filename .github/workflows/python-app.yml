@@ -27,8 +27,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip setuptools wheel
         pip install flake8 pytest pyyaml
-        # install package editable with dev extras if present, fallback to editable install
-        pip install -e ".[dev]" || pip install -e .
+        # try editable install (preferred); if it fails, fall back to setting PYTHONPATH
+        if pip install -e ".[dev]"; then
+          echo "Editable install succeeded"
+        else
+          echo "Editable install failed; falling back to PYTHONPATH"
+          echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
+        fi
     - name: Run repository guards
       run: |
         set -e

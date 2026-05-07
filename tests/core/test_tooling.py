@@ -8,6 +8,8 @@ from app.core.models import (
     WriteReceiptToolRequest,
 )
 
+from app.core import tooling
+from app.core.models import ResolveReplayToolRequest
 
 def test_resolve_replay_denies_adapter_mismatch():
     request = ResolveReplayToolRequest(
@@ -20,7 +22,6 @@ def test_resolve_replay_denies_adapter_mismatch():
     assert result["status"] == "denied"
     assert result["reason"] == "adapter_version_mismatch"
 
-
 def test_resolve_replay_denies_cache_miss():
     request = ResolveReplayToolRequest(
         run_id="missing-run",
@@ -31,7 +32,6 @@ def test_resolve_replay_denies_cache_miss():
 
     assert result["status"] == "denied"
     assert result["reason"] == "cache_miss"
-
 
 def test_resolve_replay_returns_cached_artifacts(monkeypatch):
     monkeypatch.setitem(tooling.RUN_INDEX, "run-123", ["artifact-1"])
@@ -47,7 +47,6 @@ def test_resolve_replay_returns_cached_artifacts(monkeypatch):
         "status": "resolved",
         "artifacts": ["artifact-1"],
     }
-
 
 def test_write_receipt_calls_append_receipt(monkeypatch):
     captured = {}

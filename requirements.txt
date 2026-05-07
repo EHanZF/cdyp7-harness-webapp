@@ -8,8 +8,8 @@ python-docx==1.1.2
 azure-identity==1.19.0
 azure-storage-blob==12.24.0
 azure-keyvault-secrets==4.9.0
-python-docx
 openai
-pypdfpython-multipart
-python-multipart
-python-multipart
+pypdf
+pytest
+pytest-asyncio
+httpx

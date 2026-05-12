@@ -1,71 +1,69 @@
 # Copilot instructions for this repository
 
-Purpose: give future Copilot sessions the minimal, actionable repository knowledge required to work productively.
+Purpose
+- Give GitHub Copilot clear, repository-specific guidance so sessions produce consistent, minimal, and correct changes.
 
--- Build, test, and lint (how to run locally)
+1) Build, test, and lint commands (fill in for this repo)
+- Primary build/test/lint commands (paste exact commands used in CI):
+  - Build: npm ci
+  - Test (full): npm run test:e2e
+  - Lint: npm run lint (fix: npm run lint:fix). Format: npm run format
 
-- Create a venv (Windows PowerShell):
-  - python -m venv .venv
-  - .\.venv\Scripts\Activate.ps1
-- Install runtime deps: python -m pip install -r requirements.txt
-- Install dev deps: python -m pip install -r requirements.txt -r requirements-dev.txt
+- Single-file lint example: npx eslint tests/e2e/example.spec.ts --ext .ts
+- Auto-fix single file: npx eslint tests/e2e/example.spec.ts --ext .ts --fix
+- How to run a single test (examples — replace with the project-specific form):
+  - Node (Jest/Mocha): npm test -- tests/path/to/testfile.test.js  OR npx jest tests/path/to/testfile.test.js -t "test name"
+  - Python (pytest): pytest tests/test_module.py::test_name -q
+  - Java (Maven): mvn -Dtest=ClassName#testMethod test
+  - Gradle: ./gradlew test --tests "com.example.ClassTest.testMethod"
+  - .NET: dotnet test --filter "FullyQualifiedName=Namespace.Class.TestMethod"
+  - Go: go test ./pkg -run TestName
 
-Make targets (shortcuts):
-- make venv            # create virtualenv
-- make install         # pip install -r requirements.txt
-- make install-dev     # install runtime + dev deps
-- make validate        # runs python scripts/validate_static.py (repository guards / static checks)
-- make test            # runs contract tests: pytest -q tests/contract
-- make smoke           # runs scripts/smoke_tooling.py
-- make run             # uvicorn app.main:app --host 127.0.0.1 --port 8000
+2) High-level architecture (brief, cross-file overview)
+- Languages/frameworks: <e.g. TypeScript backend, React frontend, Python worker>
+- Runtime topology: list services, libraries, and how they interact (API -> worker -> DB / frontend -> API)
+- Repos/monorepo layout: note packages, shared libs, and where to find entrypoints
+- Data stores & external dependencies: DB types, queues, caching, 3rd-party APIs
+- CI/CD: where pipeline definitions live (e.g. .github/workflows/*), deploy targets
 
-Pytest / single-test examples
-- Run full test suite: pytest
-- Run repository contract tests (Makefile): make test OR pytest -q tests/contract
-- Run a single test file: pytest tests/core/test_authz.py
-- Run a single test function: pytest tests/core/test_authz.py::test_name
-- Use -k <expr> for expression matching and -q to quiet output
+(Replace placeholders above with a 3–5 sentence summary that Copilot can use to reason about cross-file changes.)
 
-Linting & static checks
-- CI uses flake8 as primary lint guard. Locally run:
-  - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-  - flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-- Pylint is configured in pyproject.toml. Run: pylint app  (or pylint src if packaging is used)
-- Repository guards executed in CI are in .github/hooks/*.py; they should be run for PR pre-checks.
+3) Key conventions (project-specific)
+- Source layout: e.g. source lives under `src/`, tests under `tests/` or `src/**/__tests__/`.
+- Test naming: e.g. `*.test.js`, `*Spec.kt`, `*Test.java` — Copilot should follow the repo's pattern.
+- Configuration: central config files and environment variable files (list paths).
+- API schema/versioning: where OpenAPI/GraphQL schema lives and how to update it.
+- Code generation: note any codegen tools (openapi-generator, protobuf, tsc --build) and generated paths to avoid editing.
+- Formatting/linting: preferred formatter (prettier/black/dotnet-format) and autofix command.
 
--- High-level architecture (big picture)
+4) Helpful patterns for Copilot sessions
+- Make the smallest change that satisfies the tests/issue and update related files (docs, changelogs, version files) in same PR.
+- If adding dependencies, update lockfile and CI matrix.
+- For refactors: add tests covering behavior before changing public APIs.
+- When touching multiple packages, run the full test suite and include a brief summary in the PR.
 
-- FastAPI web app entrypoint: app/main.py
-  - Loads an "adapter" via app.core.config.load_adapter() and stores it at app.state.adapter
-  - Mounts routers from app.api.*: core HTTP surface lives under those routers
-  - Static assets served from app/static; index served at GET /
-- Tooling API: endpoints expose the MCP tooling surface and specialized tooling endpoints under /mcp/tools and /tools/* (see README tooling surface list)
-- Runtime helpers & scripts:
-  - scripts/validate_static.py  — static/contract validation used by CI and make validate
-  - scripts/smoke_tooling.py    — a smoke runner used by make smoke and pipelines
-- CI and pipelines:
-  - GitHub Actions workflow at .github/workflows/python-app.yml installs deps, runs repository guards, lints (flake8), and runs pytest
-  - Azure Pipelines (azure-pipelines.yml) includes DevSmoke, Build_Test and Deploy stages; packaging step zips repository and uses startup.sh to launch on Azure Web App
+5) Files for other assistants / integration
+- If present, merge important bits from: README.md, CONTRIBUTING.md, CLAUDE.md, AGENTS.md, CONVENTIONS.md, AIDER_CONVENTIONS.md
+- Check for assistant config files and their locations so Copilot can reuse rules:
+  - Claude/OpenCode: CLAUDE.md
+  - Cursor: .cursorrules, .cursor/rules/
+  - Codex/Jules/OpenCode: AGENTS.md
+  - Windsurf: .windsurfrules
+  - Aider: CONVENTIONS.md, AIDER_CONVENTIONS.md
+  - Cline: .clinerules, .cline_rules
 
--- Key repository conventions and gotchas
+6) Where to add missing info
+- Update the Build/Test/Lint section with exact commands and a brief example for running a single test.
+- Populate High-level architecture with a 3–5 sentence summary listing services and data stores.
+- Populate Key conventions with concrete patterns (test filename patterns, package boundaries, and codegen locations).
 
-- Tests: pytest.ini / pyproject define testpaths=tests and addopts include --import-mode=importlib. Prefer running pytest from repository root.
-- Makefile test target intentionally targets contract tests (tests/contract). Do not assume make test runs the full unit test suite.
-- CI repository guards: .github/hooks contain scripts that enforce static namespace, forbidden references, tool allowlists, policy overrides and schema snapshots. Run them locally before opening PRs if you need parity with CI.
-- Environment: .env and .env.example are present. In production the app enforces AZURE storage config (see app/main.py) — ensure ENV!=production locally unless those variables are set.
-- Packaging: pyproject references a src/ packaging layout but runtime code lives in app/. Some CI jobs attempt editable install (pip install -e ".[dev]") and fall back to setting PYTHONPATH if editable install fails.
-- Contract tests and tooling contracts: the repository has specialized contract tests under tests/contract—these validate the MCP tooling API boundary and are critical for runtime compatibility.
-- Optional allowlist: CI will run tool_allowlist_guard.py only if contracts/cdyp7-tool-allowlist.yaml exists. If you add or update allowlists, keep the file in contracts/ and CI will validate it.
+7) Quick checklist for PRs Copilot should create
+- Minimal, well-scoped changes
+- Add/update tests demonstrating behavior
+- Run linters and tests locally; include CI status in PR description
+- Update docs or README if public behavior changes
 
--- Useful file pointers (entry points for automation)
-- app/main.py                — FastAPI entry
-- app/api/                   — HTTP routers and handler implementations
-- .github/hooks/*            — CI guards and static checks used on PRs
-- scripts/validate_static.py — local/CI static validator
-- scripts/smoke_tooling.py   — smoke runner used by DevSmoke pipeline
-- Makefile                   — common local targets
-- README.md                  — quickstart and tooling surface
+---
 
-
-
-(Generated: Copilot instructions file)
+Notes for maintainers
+- Replace placeholder lines above with the project-specific commands and paths so future Copilot sessions can synthesize accurate changes.

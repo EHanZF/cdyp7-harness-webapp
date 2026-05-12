@@ -19,6 +19,10 @@ def main():
         if not f.is_file():
             continue
 
+        # Skip scanning hook scripts and other metadata in .github
+        if '.github' in f.parts:
+            continue
+
         txt = f.read_text(errors="ignore")
 
         for pattern in BLOCK_FIELDS:

@@ -34,6 +34,8 @@ jobs:
           echo "Editable install failed; falling back to PYTHONPATH"
           echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
         fi
+        # Ensure PYTHONPATH points to the workspace so tests can import 'app' in CI
+        echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
     - name: Run repository guards (PRs only)
       if: github.event_name == 'pull_request'
       run: |

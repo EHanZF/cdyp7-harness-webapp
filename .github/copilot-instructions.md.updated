@@ -1,0 +1,75 @@
+# Copilot instructions for this repository (proposed update)
+
+Purpose: provide Copilot sessions the minimal, concrete repository knowledge they need to act productively.
+
+-- Build, test, and lint commands (how to run locally)
+
+- Create & activate virtualenv
+  - Windows (PowerShell): python -m venv .venv && .\.venv\Scripts\Activate.ps1
+  - macOS/Linux (bash): python -m venv .venv && source .venv/bin/activate
+
+- Install dependencies
+  - runtime: python -m pip install -r requirements.txt
+  - dev: python -m pip install -r requirements.txt -r requirements-dev.txt
+  - Makefile aliases: make venv, make install, make install-dev
+
+- Run the app (development)
+  - uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+  - make run (Makefile alias)
+
+- Static validation / CI guards
+  - scripts/validate_static.py: python scripts/validate_static.py
+  - CI hook scripts: run any script in .github/hooks/ with python (e.g. python .github/hooks/forbidden_reference_guard.py)
+  - Local repository guard helper: make validate (invokes scripts/validate_static.py and other checks)
+
+- Tests (pytest)
+  - Run full test suite: pytest
+  - Run repository contract tests: make test OR pytest -q tests/contract
+  - Run a single test file: pytest tests/core/test_authz.py
+  - Run a single test function: pytest tests/core/test_authz.py::test_name
+  - Use -k <expr> to match tests by substring/expression and -q for quieter output
+
+- Linting & static checks
+  - flake8 (CI primary):
+    - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    - flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+  - pylint is configured in pyproject.toml: pylint app
+  - Repository guards are in .github/hooks/ — run them locally to match CI
+
+-- High-level architecture (big picture)
+
+- FastAPI web app
+  - entrypoint: app/main.py
+  - adapter: loaded via app.core.config.load_adapter() and attached to app.state.adapter
+  - HTTP surface: routers under app/api/*; tooling endpoints under /mcp/tools and /tools/*
+  - static assets: app/static, index served at GET /
+
+- Tooling & contracts
+  - This repo implements the CDYP7 tooling API adapters and strict tooling surface; contract validation lives under tests/contract and scripts/validate_static.py
+  - templates/, examples/ and artifacts/ contain reference templates and example tool-call payloads used by tests
+
+- CI and packaging
+  - GitHub Actions: .github/workflows/python-app.yml (installs deps, runs validate, flake8, pytest)
+  - Azure Pipelines: azure-pipelines.yml defines DevSmoke, Build_Test, Deploy stages; startup.sh used by packaging/deploy
+  - Packaging notes: pyproject.toml references a src/ layout, but runtime code is in app/; CI sometimes does editable installs or sets PYTHONPATH
+
+-- Key conventions and repository-specific patterns
+
+- Makefile 'test' target runs contract tests (tests/contract) intentionally — do not assume it runs all unit tests
+- pytest.ini and pyproject addopts include --import-mode=importlib; run pytest from repository root to preserve discovery
+- .env and .env.example are provided; use .env for local dev. The app may require AZURE_* env vars for production; avoid setting ENV=production locally unless those values exist
+- CI guards (.github/hooks/*) enforce static namespace, forbidden references, policy overrides, schema snapshots, and tool allowlists. Add new allowlists to contracts/ to have CI auto-validate them
+- scripts/smoke_tooling.py is used by DevSmoke pipeline and make smoke
+- examples/ contains example tool-call JSON (used by tests). When updating templates or examples, update corresponding sha256 checks in scripts/validate_static.py
+
+-- Important file pointers
+
+- app/main.py                — FastAPI application startup
+- app/api/                   — HTTP routers and handler implementations
+- scripts/validate_static.py — static/contract validator used by CI and make validate
+- scripts/smoke_tooling.py   — smoke runner used by DevSmoke pipeline
+- .github/hooks/             — repository guard scripts used in CI
+- Makefile                   — convenient local targets (venv, install, validate, test, smoke, run)
+- README.md                  — quickstart and tooling surface (keep in sync)
+
+(Generated: proposed Copilot instructions update)

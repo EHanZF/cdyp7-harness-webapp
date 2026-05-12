@@ -1,0 +1,36 @@
+# MCP server suggestions for CI/dev use
+# - DevSmoke: runs scripts/smoke_tooling.py and scripts/validate_static.py in a controlled runner
+# - Playwright: runs frontend E2E using Playwright's webServer (Playwright manages app lifecycle)
+
+servers:
+  - name: devsmoke-runner
+    type: shell
+    description: Run DevSmoke pipeline tasks (smoke_tooling + static validation)
+    command_bash: |
+      python -m venv .mcp_env
+      source .mcp_env/bin/activate
+      python -m pip install -r requirements.txt -r requirements-dev.txt
+      python scripts/validate_static.py
+      python scripts/smoke_tooling.py
+    command_powershell: |
+      python -m venv .mcp_env
+      .\.mcp_env\Scripts\Activate.ps1
+      python -m pip install -r requirements.txt -r requirements-dev.txt
+      python scripts/validate_static.py
+      python scripts/smoke_tooling.py
+    timeout: 600
+
+  - name: playwright-e2e
+    type: shell
+    description: Run Playwright E2E; Playwright's webServer in tests/e2e/playwright.config.ts will start the app
+    command_bash: |
+      cd tests/e2e
+      npm ci
+      npx playwright install --with-deps
+      npx playwright test
+    command_powershell: |
+      Set-Location tests\e2e
+      npm ci
+      npx playwright install --with-deps
+      npx playwright test
+    timeout: 1200

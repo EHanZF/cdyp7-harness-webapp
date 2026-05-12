@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('homepage has title', async ({ page }) => {
-  await page.goto('https://example.com');
-  await expect(page).toHaveTitle(/Example Domain/);
+test('homepage returns 200', async ({ request }) => {
+  const resp = await request.get('/');
+  expect(resp.status()).toBe(200);
 });

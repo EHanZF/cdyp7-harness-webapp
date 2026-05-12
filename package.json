@@ -1,0 +1,25 @@
+{
+  "name": "playwright-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test:e2e": "npx playwright test --config=playwright.config.ts",
+    "test": "echo \"No unit tests defined\" && exit 0",
+    "install-browsers": "npx playwright install --with-deps",
+    "lint": "eslint tests --ext .ts,.js",
+    "lint:fix": "eslint tests --ext .ts,.js --fix",
+    "format": "prettier --write playwright.config.ts tests package.json",
+    "prepare": "husky install",
+    "precommit": "npm run lint:fix && npm run format && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.36.0",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^8.10.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^9.1.7",
+    "prettier": "^2.8.8"
+  }
+}

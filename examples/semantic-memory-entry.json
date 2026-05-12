@@ -1,0 +1,22 @@
+{
+  "memory_type": "semantic",
+  "pattern_id": "lifecycle_status_conflict",
+  "domain": "brakes",
+  "pattern_type": "lifecycle_status_conflict",
+  "status": "active",
+  "last_confirmed_utc": "2026-02-24T15:52:30Z",
+  "curation": {
+    "curator": "memory_curator_job",
+    "approved": true,
+    "approval_ref": "HITL-MEM-001"
+  },
+  "evidence": [
+    "mem-ep-001",
+    "mem-ep-002",
+    "mem-ep-003"
+  ],
+  "payload": {
+    "occurrences": 3
+  },
+  "hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+}

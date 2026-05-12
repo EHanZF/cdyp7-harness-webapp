@@ -1,12 +1,13 @@
-OK static tooling API validation
+MEMORY_STATIC_EXIT=0
+STDOUT:
+OK memory layer static assertions
 
 STDERR:
 
-EXIT=0
 
-CONTRACT_TEST:
-OK tooling API contract models
+MEMORY_NEGATIVE_EXIT=0
+STDOUT:
+OK memory guardrail negative tests
 
 STDERR:
 
-EXIT=0

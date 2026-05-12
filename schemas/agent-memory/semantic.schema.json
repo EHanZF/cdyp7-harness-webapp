@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agent-memory/semantic.schema.json",
+  "title": "CDYP7 Curated Semantic Memory Entry",
+  "type": "object",
+  "required": [
+    "memory_type",
+    "pattern_id",
+    "domain",
+    "status",
+    "curation",
+    "evidence",
+    "hash"
+  ],
+  "properties": {
+    "memory_type": {
+      "const": "semantic"
+    },
+    "pattern_id": {
+      "type": "string"
+    },
+    "domain": {
+      "enum": [
+        "brakes",
+        "steering"
+      ]
+    },
+    "pattern_type": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "active",
+        "deprecated",
+        "deleted_pending_tombstone"
+      ]
+    },
+    "last_confirmed_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "curation": {
+      "type": "object",
+      "required": [
+        "curator",
+        "approved",
+        "approval_ref"
+      ],
+      "properties": {
+        "curator": {
+          "type": "string"
+        },
+        "approved": {
+          "const": true
+        },
+        "approval_ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

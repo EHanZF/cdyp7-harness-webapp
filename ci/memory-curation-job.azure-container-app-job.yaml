@@ -1,0 +1,27 @@
+# Azure Container Apps Job spec for governed memory curation.
+# The curator is the only component allowed to mutate curated semantic memory.
+
+apiVersion: 2023-05-01
+kind: containerappjob
+metadata:
+  name: agent-memory-curator
+spec:
+  configuration:
+    triggerType: Schedule
+    scheduleTriggerConfig:
+      cronExpression: "0 2 * * *"
+      parallelism: 1
+      replicaCompletionCount: 1
+    replicaRetryLimit: 1
+    manualTriggerConfig: null
+  template:
+    containers:
+      - name: memory-curator
+        image: memory/curator:v1.0.0
+        env:
+          - name: MEMORY_CURATOR_MODE
+            value: governed
+          - name: REQUIRE_HUMAN_APPROVAL
+            value: "true"
+          - name: MEMORY_HOOK_EVALUATION_MODE
+            value: post_curation_only

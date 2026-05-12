@@ -1,0 +1,20 @@
+{
+  "memory_type": "episodic",
+  "entry_id": "mem-ep-001",
+  "run_id": "run-001",
+  "domain": "brakes",
+  "agent_id": "CDYP71",
+  "timestamp_utc": "2026-02-24T15:52:30Z",
+  "event_type": "reasoning_completed",
+  "confidence_mode": "deterministic_grounded",
+  "source_refs": [
+    "DOORS:REQ-001"
+  ],
+  "trace_ids": [
+    "trace-001"
+  ],
+  "payload": {
+    "summary": "grounded run result"
+  },
+  "hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+}

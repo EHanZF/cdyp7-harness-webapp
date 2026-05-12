@@ -10,4 +10,3 @@ STDOUT:
 OK memory guardrail negative tests
 
 STDERR:
-

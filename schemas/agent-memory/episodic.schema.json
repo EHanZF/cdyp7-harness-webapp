@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agent-memory/episodic.schema.json",
+  "title": "CDYP7 Episodic Memory Entry",
+  "type": "object",
+  "required": [
+    "memory_type",
+    "entry_id",
+    "run_id",
+    "domain",
+    "agent_id",
+    "timestamp_utc",
+    "event_type",
+    "confidence_mode",
+    "source_refs",
+    "hash"
+  ],
+  "properties": {
+    "memory_type": {
+      "const": "episodic"
+    },
+    "entry_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "domain": {
+      "enum": [
+        "brakes",
+        "steering"
+      ]
+    },
+    "agent_id": {
+      "enum": [
+        "CDYP71",
+        "CDYP72"
+      ]
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "confidence_mode": {
+      "enum": [
+        "deterministic_grounded",
+        "grounded_with_conflict",
+        "insufficient_authoritative_evidence",
+        "supplemental_only"
+      ]
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "trace_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

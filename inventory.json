@@ -1,197 +1,102 @@
 [
   {
     "path": "README.md",
-    "sha256": "6829c49f0ff22474a963f4c36bafab54e3b2accc439870143ae7121860682572",
-    "bytes": 941
+    "sha256": "12cbc50fd476345d9b96234ae7a1347ea3d7952fe04b9893750465cd76e29f14",
+    "bytes": 680
   },
   {
-    "path": "app/__init__.py",
-    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "bytes": 0
+    "path": "app/mcp/memory_tools.py",
+    "sha256": "74a60efedb72dddadc873d9f7e17d8918ed75f59d51b646d123cbbf4d213d819",
+    "bytes": 914
   },
   {
-    "path": "app/__pycache__/__init__.cpython-312.pyc",
-    "sha256": "174cae3453efb0c04f9957a37a27526417153a69a14c5b692b876c859a8b0353",
-    "bytes": 168
+    "path": "app/memory/__pycache__/guardrails.cpython-312.pyc",
+    "sha256": "1eec015a669aa7221ab349d5dde903495817f07b0702da1a23a2e2e3d0a7016c",
+    "bytes": 2302
   },
   {
-    "path": "app/api/__init__.py",
-    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "bytes": 0
+    "path": "app/memory/__pycache__/hooks.cpython-312.pyc",
+    "sha256": "2c208693323b3c23463d399e95a25a5721241fdb59115c6e0592abdd974de89f",
+    "bytes": 1577
   },
   {
-    "path": "app/api/routes.py",
-    "sha256": "29670adf95ceb27837dbec783e1551773dfbfbbf2eb72a1925059ed3ea05fc0b",
-    "bytes": 4160
-  },
-  {
-    "path": "app/core/__init__.py",
-    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "bytes": 0
-  },
-  {
-    "path": "app/core/__pycache__/__init__.cpython-312.pyc",
-    "sha256": "7cc215a2c26e7622af3b24956284d59c3d8663aa7ee2816209625f74304a9499",
-    "bytes": 173
-  },
-  {
-    "path": "app/core/__pycache__/hashing.cpython-312.pyc",
-    "sha256": "d922dac5234f44160fcfffa3b8574497d6028048f09c698885b46a1765cfa7ce",
-    "bytes": 1267
-  },
-  {
-    "path": "app/core/__pycache__/models.cpython-312.pyc",
-    "sha256": "1ee3a4d66ec396dc3d0ed83d2e56e97a36d8f912b007c8892762c8bce9a12e65",
-    "bytes": 6432
-  },
-  {
-    "path": "app/core/authz.py",
-    "sha256": "8fe978f8ca73fab2652d85a1f2503f70413253e5f3154adef902594c7c682681",
-    "bytes": 166
-  },
-  {
-    "path": "app/core/config.py",
-    "sha256": "e89843eefe020ac97ae133f5cf70c0848ea81d56304a796b68d44a49806990cf",
-    "bytes": 1986
-  },
-  {
-    "path": "app/core/hashing.py",
-    "sha256": "7aa3ce5c9e7863e77bd761666e40c070776969f414aa0ffa80bb17788137e614",
-    "bytes": 366
-  },
-  {
-    "path": "app/core/keyvault.py",
-    "sha256": "77631ab347f9fc06fac76e5892b6e81d12b20bf45a5066faf8eebe0b4497bace",
-    "bytes": 412
-  },
-  {
-    "path": "app/core/models.py",
-    "sha256": "290fddeba935f81548cebfb7b818123d5afd4bdffe5f9b66b8e1209346a8f4dc",
-    "bytes": 3046
-  },
-  {
-    "path": "app/core/receipts.py",
-    "sha256": "987611878ceb943ae7f8b8103f5104a3c55527d6a849163d63e83bf5d6c337f5",
+    "path": "app/memory/guardrails.py",
+    "sha256": "fd3091dda5b1f54ae2d3f1e912222a5d269cb6bbae6c2b00e346f2ab84f9bed1",
     "bytes": 1437
   },
   {
-    "path": "app/core/release_sheet_renderer.py",
-    "sha256": "2a7854bf4b77851750cbf534d81d8f296a3b2320da8e2fc05185b0a5447edc04",
-    "bytes": 3710
+    "path": "app/memory/hooks.py",
+    "sha256": "fc703799cb747dfb947e95c3db70b26209ac81ecb7e62f6476eecb9ac6bde6e0",
+    "bytes": 1218
   },
   {
-    "path": "app/core/release_sheet_validator.py",
-    "sha256": "55bdc86b34cf96d49b5ad85173469331c964a5ae0f41ca1d17f8ddb076d5db70",
-    "bytes": 1721
+    "path": "checkpoints/CKPT-CDYP7-MEMORY-HOOKS-INTEGRATION-001.yaml",
+    "sha256": "8efc09ac45a71fe64c140399bb792abc50a47f9f8855c107ae25ab7d14508205",
+    "bytes": 605
   },
   {
-    "path": "app/core/storage.py",
-    "sha256": "3a8a6c6dd36d6bf848a0ad2be7758d78f77599326311cad72fd0f3cf28da7f20",
-    "bytes": 2089
+    "path": "ci/azure-pipelines-memory-gate.yml",
+    "sha256": "7eafd588cb3e1111d73d2bde9b0f904f00d6eb8cb448cd4dc947e615c7e53ec2",
+    "bytes": 556
   },
   {
-    "path": "app/core/template.py",
-    "sha256": "dae03abf15013edda04ef8c0173773dd15fd7185963fe7d95b2735990631a5e0",
-    "bytes": 1739
+    "path": "ci/memory-curation-job.azure-container-app-job.yaml",
+    "sha256": "262359c135f0390a46f8589f154a38e220e1285b5c3144194b4947dcf17cdff4",
+    "bytes": 768
   },
   {
-    "path": "app/core/tooling.py",
-    "sha256": "410a9109df6d291299d73917841ecb5840615d30201eed1827a4849db4f37569",
-    "bytes": 3633
+    "path": "config/runtime-adapter.memory-extension.yaml",
+    "sha256": "7403ffcdc0a23ae9f94557aa30f0d1f570c5e06452ed179b1097cf74e03c6abd",
+    "bytes": 2982
   },
   {
-    "path": "app/main.py",
-    "sha256": "46e3e2892b540066a2a319d09bf5586611a391ce46c7331ab4ae6b1c64bb0a9c",
-    "bytes": 596
+    "path": "docs/MEMORY_HOOKS.md",
+    "sha256": "4fa28574adbf512b06dd9b29d1e090c1bfa157e88c4f37877849f25b280292c6",
+    "bytes": 1157
   },
   {
-    "path": "app/schemas/tooling-api.openapi.yaml",
-    "sha256": "488ef6788653e503acdd59bfc45739c63a67f66a308395551955d38038a08ec7",
-    "bytes": 1042
+    "path": "examples/episodic-memory-entry.json",
+    "sha256": "38f1fd7abc4d63fba34b771f049a8e97ab177bfdeca62c160c83d59e015305c6",
+    "bytes": 481
   },
   {
-    "path": "app/static/index.html",
-    "sha256": "57610dfcdc6042624928e228f449854d6f38dd98269b4578b556b54441f7e727",
-    "bytes": 944
+    "path": "examples/semantic-memory-entry.json",
+    "sha256": "b88697ce54e08285c2840321227642ec6aac73f6e3b104ad87a5276e959cb63d",
+    "bytes": 530
   },
   {
-    "path": "azure-pipelines.yml",
-    "sha256": "178e022cb2722a329653f0d3417b447d99c0911aaafaaa9ddd81015fd7894edc",
-    "bytes": 1404
+    "path": "schemas/agent-memory/episodic.schema.json",
+    "sha256": "50915367db6830dcb3906935c43a40005f26dcfce714152b9c2e46926cdfbc9e",
+    "bytes": 1434
   },
   {
-    "path": "checkpoints/CKPT-CDYP7-HARNESS-TOOLING-API-AZURE-001.yaml",
-    "sha256": "a73be13ea27c2cce0eed6b29a69e364605d96dde4af63784dcd1b2c6580d0fdf",
-    "bytes": 756
+    "path": "schemas/agent-memory/hook-event.schema.json",
+    "sha256": "8bec43a6214d480cc5f12be4dbb6f39146e8767b805d1e2ff6c206893cdfbbb7",
+    "bytes": 761
   },
   {
-    "path": "config/runtime-adapter.yaml",
-    "sha256": "dd1141d7c75b8d6df8ae594522ab758d90bcae0ab5b0488559f716b9afe98014",
-    "bytes": 1371
+    "path": "schemas/agent-memory/semantic.schema.json",
+    "sha256": "811004124e220a13dea29ca8b09d56f53ff227d06dad9055d9347cb398f321e3",
+    "bytes": 1487
   },
   {
-    "path": "docs/AZURE_DEPLOYMENT.md",
-    "sha256": "ba09a46595307dbe7b14515461648e09d1c466bbc7029763aadd550cce9aff1c",
-    "bytes": 414
+    "path": "scripts/validate_memory_layer.py",
+    "sha256": "ff567a362a6ad0f031a1c141a89ff58921cbb71796f8d1b0c83cbf3b1118bda0",
+    "bytes": 1066
   },
   {
-    "path": "docs/TOOLING_API.md",
-    "sha256": "d84b0748170f69e8e47fe4bce026b8d4ae0636bf2aebd07e3f092a8f6dd98607",
-    "bytes": 815
+    "path": "tests/memory/negative-memory-tests.yaml",
+    "sha256": "c93f740c615cff5dd666d4acdb139a054e4c08b2f22bd187ff514242712c5294",
+    "bytes": 1122
   },
   {
-    "path": "examples/generate-release-sheet.tool-call.json",
-    "sha256": "94a5154d50f06e39c544b7de814c9f749b53a5a4120fb894aafda5b4abe98731",
-    "bytes": 2803
-  },
-  {
-    "path": "infra/bicep/main.bicep",
-    "sha256": "d3beb6715966db5265b4ace28de9faf4602667c8c95960b8647a851050a099e0",
-    "bytes": 1863
-  },
-  {
-    "path": "infra/terraform/main.tf",
-    "sha256": "42031a4feffe864219494fa6d0294f20d4617ed094ecacc6d934a4c44ee223d4",
-    "bytes": 2188
-  },
-  {
-    "path": "mcp/tools.json",
-    "sha256": "0e3e3bc39e2540f53fbc9aca7920e3ede9b379c03f95aa6cce7c0db05098e3b8",
-    "bytes": 2929
-  },
-  {
-    "path": "requirements.txt",
-    "sha256": "00064574c7377b4e710016417e614f270e86201cb6b9caf8df44be3e498a376d",
-    "bytes": 218
-  },
-  {
-    "path": "scripts/smoke_tooling.py",
-    "sha256": "76f651f28d5bddcf7c74d4dece301b13d828ba05c8aae1750b291246240801ab",
-    "bytes": 414
-  },
-  {
-    "path": "scripts/validate_static.py",
-    "sha256": "af239f58ef2ca5ae289913bdde788e89e399d7fb8eedfcb2207f20e48f975f30",
-    "bytes": 1087
-  },
-  {
-    "path": "startup.sh",
-    "sha256": "cf142a8e755ebc28a3b801f268ae4a413c7532a8b17ff083ff7933a522a17e83",
-    "bytes": 129
-  },
-  {
-    "path": "templates/system-release-sheet-template.docx",
-    "sha256": "c82c036d9c3661e108f8c0a52443a9dae2d8d40479dc2a2a419e9960625cef7c",
-    "bytes": 36655
-  },
-  {
-    "path": "tests/contract/test_tooling_api_contract.py",
-    "sha256": "f52730b21df66963317e9825d517a2b5789766553748a11316ccc37489f35870",
-    "bytes": 852
+    "path": "tests/memory/test_memory_guardrails.py",
+    "sha256": "50cdef97ac54479b96479834af5d7614f06b2e5dd28d2aa0e111710cae983b62",
+    "bytes": 1091
   },
   {
     "path": "validation_output.txt",
-    "sha256": "b3277abdf22092bb6700ba4c50b662f9edb08c40d6e86b8800c1805c6597bdf3",
-    "bytes": 114
+    "sha256": "bdbcc73a39045909dc943b816f91568d25f5ae267902864a864c5c6a027780e4",
+    "bytes": 150
   }
 ]

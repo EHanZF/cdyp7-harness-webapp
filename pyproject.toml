@@ -9,10 +9,10 @@ requires-python = ">=3.11"
 dependencies = [
   "fastapi",
   "uvicorn[standard]",
-<<<<<<< HEAD
+
   "python-multipart",
-=======
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)
+
+
   "python-docx"
 ]
 
@@ -23,13 +23,13 @@ dev = [
   "jsonschema",
   "fastapi",
   "httpx",
-<<<<<<< HEAD
+
   "pydantic",
   "python-multipart",
   "debugpy"
-=======
+
   "pydantic"
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)
+
 ]
 
 [tool.pytest.ini_options]
@@ -45,18 +45,18 @@ addopts = [
 py-version = "3.11"
 recursive = true
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+
+
 [tool.pylint.format]
 max-line-length = 120
 
-=======
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)
-=======
+
+
+
 [tool.pylint.format]
 max-line-length = 120
 
->>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)
+
 [tool.pylint.messages_control]
 disable = [
   "missing-module-docstring",
@@ -65,8 +65,8 @@ disable = [
   "too-few-public-methods"
 ]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+
+
 [tool.pylint.design]
 max-args = 8
 max-locals = 20
@@ -83,19 +83,19 @@ omit = [
 
 [tool.setuptools.packages.find]
 where = ["app"]
-=======
+
 [tool.pylint.format]
 max-line-length = 100
 
-=======
->>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)
+
+
 [tool.pylint.design]
 max-args = 8
 max-locals = 20
 max-branches = 15
-<<<<<<< HEAD
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)
-=======
+
+
+
 
 [tool.coverage.run]
 source = ["app"]
@@ -105,4 +105,3 @@ omit = [
   "tests/*",
   "__pycache__/*"
 ]
->>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)

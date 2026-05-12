@@ -11,8 +11,7 @@ python -m pip install -e .
 python -m pylint --version
 python -m pytest --version
 
-<<<<<<< HEAD
+
 echo "Dev environment ready."
-=======
+
 echo "Dev environment ready."
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)

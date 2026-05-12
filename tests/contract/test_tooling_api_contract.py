@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json
 from pathlib import Path
-<<<<<<< HEAD
+
 from app.core.models import ToolEnvelope, GenerateReleaseSheetToolRequest, ValidateReleaseSheetToolRequest, WriteReceiptToolRequest, FetchArtifactToolRequest, ResolveReplayToolRequest
 root = Path(__file__).resolve().parents[2]
 call = json.loads((root/'examples/generate-release-sheet.tool-call.json').read_text())
@@ -12,7 +12,7 @@ WriteReceiptToolRequest(event_type='x', actor='user@example.com', artifact_id='a
 FetchArtifactToolRequest(artifact_id='srs-artifact-S011-CAT5')
 ResolveReplayToolRequest(run_id='run-local-001', adapter_version='v1.0.0')
 print('OK tooling API contract models')
-=======
+
 
 from app.core.models import (
     FetchArtifactToolRequest,
@@ -80,4 +80,3 @@ def test_resolve_replay_tool_request_contract_loads():
 
     assert request.run_id == "run-local-001"
     assert request.adapter_version == "v1.0.0"
->>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)

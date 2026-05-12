@@ -1,13 +1,13 @@
-<<<<<<< HEAD
 
-=======
->>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)
+
+
+
 # pylint: disable=too-many-return-statements
 
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Request
-=======
+
 from typing import Any
 
 from fastapi import APIRouter, Body, Header, HTTPException, Request

@@ -70,7 +70,7 @@ def mcp_tools_call(env: ToolEnvelope):
         raise HTTPException(
             status_code=400, detail={"error": "tool_call_failed", "message": str(exc), "fail_closed": True}
         ) from exc
-<<<<<<< HEAD
+
 
 
 @router.post("/tools/generate-release-sheet")
@@ -127,7 +127,7 @@ def get_local_output(filename: str):
     return FileResponse(
         path, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", filename=filename
     )
-=======
+
 from pathlib import Path
 from app.core.models import *
 from app.core import tooling
@@ -199,8 +199,8 @@ def mcp_tools_call(env: ToolEnvelope):
         raise HTTPException(
             status_code=400, detail={"error": "tool_call_failed", "message": str(exc), "fail_closed": True}
         )
-=======
->>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)
+
+
 
 
 @router.post("/tools/generate-release-sheet")
@@ -254,4 +254,3 @@ def get_local_output(filename: str):
     path = ROOT / 'artifacts' / filename
     if not path.exists(): raise HTTPException(status_code=404, detail='not_found')
     return FileResponse(path, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document', filename=filename)
-

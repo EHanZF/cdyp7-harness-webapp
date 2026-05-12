@@ -1,0 +1,52 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# =========================
+# FastAPI / App files
+# =========================
+*.log
+
+# =========================
+# Playwright / E2E
+# =========================
+playwright-report/
+test-results/
+results/
+node_modules/
+
+# Traces / recordings
+trace.zip
+*.trace
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/*
+!.vscode/launch.json
+
+# =========================
+# Git
+# =========================
+*.swp
+*.bak

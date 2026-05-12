@@ -21,7 +21,8 @@ dev = [
   "fastapi",
   "httpx",
   "pydantic",
-  "python-multipart"
+  "python-multipart",
+  "debugpy"
 ]
 
 [tool.pytest.ini_options]

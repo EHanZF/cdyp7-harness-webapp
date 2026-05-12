@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "CDYP7 API - FastAPI/Uvicorn stable",
-      "type": "debugpy",
+      "type": "python",
       "request": "launch",
       "module": "uvicorn",
       "args": [
@@ -24,7 +24,7 @@
     },
     {
       "name": "CDYP7 API - FastAPI/Uvicorn reload",
-      "type": "debugpy",
+      "type": "python",
       "request": "launch",
       "module": "uvicorn",
       "args": [
@@ -40,12 +40,13 @@
       "subProcess": true,
       "env": {
         "PYTHONPATH": "${workspaceFolder}",
-        "ENABLE_MCP_UI": "true"
+        "ENABLE_MCP_UI": "true",
+        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
       }
     },
     {
       "name": "CDYP7 API - FastAPI (debugpy listen 127.0.0.1:5678 - no-wait)",
-      "type": "debugpy",
+      "type": "python",
       "request": "launch",
       "module": "debugpy",
       "args": [
@@ -64,12 +65,13 @@
       "justMyCode": false,
       "env": {
         "PYTHONPATH": "${workspaceFolder}",
-        "ENABLE_MCP_UI": "true"
+        "ENABLE_MCP_UI": "true",
+        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
       }
     },
     {
       "name": "CDYP7 API - FastAPI (debugpy 8000)",
-      "type": "debugpy",
+      "type": "python",
       "request": "launch",
       "module": "debugpy",
       "args": [
@@ -88,12 +90,13 @@
       "justMyCode": false,
       "env": {
         "PYTHONPATH": "${workspaceFolder}",
-        "ENABLE_MCP_UI": "true"
+        "ENABLE_MCP_UI": "true",
+        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
       }
     },
     {
       "name": "CDYP7 API - FastAPI (quick run)",
-      "type": "debugpy",
+      "type": "python",
       "request": "launch",
       "module": "uvicorn",
       "args": [
@@ -108,12 +111,13 @@
       "justMyCode": false,
       "env": {
         "PYTHONPATH": "${workspaceFolder}",
-        "ENABLE_MCP_UI": "true"
+        "ENABLE_MCP_UI": "true",
+        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
       }
     },
     {
       "name": "CDYP7 API - Attach to debugpy",
-      "type": "debugpy",
+      "type": "python",
       "request": "attach",
       "connect": {
         "host": "127.0.0.1",

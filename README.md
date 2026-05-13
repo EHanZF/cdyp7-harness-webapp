@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CDYP7 Memory Hooks MCP Web App Integration
 
 This bundle adds operational memory hooks, schemas, negative tests, and a curation job spec to the CDYP7 harness.
@@ -118,9 +117,8 @@ sha256:c82c036d9c3661e108f8c0a52443a9dae2d8d40479dc2a2a419e9960625cef7c
 
 ## Boundary
 
-<<<<<<< HEAD
 Memory is not evidence. Memory is not authority. Runtime writes are forbidden. Hooks are signals only.
-=======
+
 ```text
 Execution + evidence only.
 No release approval.
@@ -129,4 +127,3 @@ No HITL resolution.
 No policy decision.
 No requirement authoring.
 ```
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)

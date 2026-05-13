@@ -42,11 +42,6 @@ disable = [
   "too-few-public-methods"
 ]
 
-[tool.pylint.design]
-max-args = 8
-max-locals = 20
-max-branches = 15
-
 [tool.coverage.run]
 source = ["app"]
 omit = [

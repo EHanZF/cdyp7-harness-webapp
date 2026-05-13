@@ -10,7 +10,13 @@
           "document_id",
           "system",
           "cat_level",
-          "fields"
+          "template_ref",
+          "release",
+          "identification",
+          "software",
+          "reason_for_release",
+          "release_documentation",
+          "known_issues"
         ],
         "properties": {
           "document_id": {
@@ -20,6 +26,7 @@
             "type": "string"
           },
           "cat_level": {
+            "type": "string",
             "enum": [
               "CAT1",
               "CAT2",
@@ -28,9 +35,29 @@
               "CAT5"
             ]
           },
-          "fields": {
-            "type": "object",
-            "additionalProperties": true
+          "template_ref": {
+            "type": "string"
+          },
+          "release": {
+            "type": "object"
+          },
+          "identification": {
+            "type": "object"
+          },
+          "software": {
+            "type": "object"
+          },
+          "reason_for_release": {
+            "type": "string"
+          },
+          "release_documentation": {
+            "type": "object"
+          },
+          "known_issues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
@@ -49,6 +76,7 @@
             "type": "string"
           },
           "validation_profile": {
+            "type": "string",
             "enum": [
               "system_release_sheet",
               "system_release_sheet_cat5"
@@ -122,7 +150,5 @@
       }
     }
   ]
-
-}
 
 }

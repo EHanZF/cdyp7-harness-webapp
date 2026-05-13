@@ -28,7 +28,7 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
 
       # ✅ important fix
-      - run: PYTHONPATH=. pytest
+      - run: PYTHONPATH=. pytest -c pytest.ini
 
 
   lint:

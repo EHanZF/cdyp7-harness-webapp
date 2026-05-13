@@ -2,13 +2,13 @@ import json
 from pathlib import Path
 from jsonschema import validate, ValidationError
 
-TOOLS_PATH = Path("app/mcp/tools.json")
+TOOLS_PATH = Path(__file__).parent / "tools.json"
 
-# Load once (performance)
-with open(TOOLS_PATH) as f:
-    TOOLS = json.load(f)["tools"]
+with open(TOOLS_PATH, encoding="utf-8") as f:
+    content = f.read().strip()
+    data = json.loads(content)
+    TOOLS = data["tools"]
 
-# Build quick lookup
 TOOL_SCHEMAS = {tool["name"]: tool["input_schema"] for tool in TOOLS}
 
 

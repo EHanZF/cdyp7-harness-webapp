@@ -15,7 +15,6 @@ from app.core.models import (
 router = APIRouter()
 
 
-# ✅ Health check
 @router.get("/health")
 def health():
     return {
@@ -24,17 +23,23 @@ def health():
     }
 
 
-# ✅ Generate release sheet
 @router.post("/tools/generate-release-sheet")
 def generate_release_sheet(
     payload: GenerateReleaseSheetToolRequest,
     request: Request,
 ):
-    actor = request.headers.get("x-actor", "tooling.user@example.com")
-    run_id = request.headers.get("x-run-id")
+    actor = request.headers.get("x-actor")
+    if not actor:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "missing_actor", "message": "x-actor header is required"}
+        )
+
+    run_id = request.headers.get("x-run-id", "api-run")
 
     try:
-        return tooling.generate_release_sheet(payload, actor, run_id)
+        result = tooling.generate_release_sheet(payload, actor, run_id)
+        return {"status": "success", "result": result}
     except Exception as exc:
         raise HTTPException(
             status_code=400,
@@ -46,11 +51,11 @@ def generate_release_sheet(
         ) from exc
 
 
-# ✅ Validate release sheet
 @router.post("/tools/validate-release-sheet")
 def validate_release_sheet(payload: ValidateReleaseSheetToolRequest):
     try:
-        return tooling.validate_release_sheet(payload)
+        result = tooling.validate_release_sheet(payload)
+        return {"status": "success", "result": result}
     except Exception as exc:
         raise HTTPException(
             status_code=400,
@@ -62,12 +67,12 @@ def validate_release_sheet(payload: ValidateReleaseSheetToolRequest):
         ) from exc
 
 
-# ✅ Write receipt
 @router.post("/tools/write-receipt")
 def write_receipt(payload: WriteReceiptToolRequest, request: Request):
     try:
         actor = request.headers.get("x-actor", payload.actor)
-        return tooling.write_receipt(payload, actor)
+        result = tooling.write_receipt(payload, actor)
+        return {"status": "success", "result": result}
     except Exception as exc:
         raise HTTPException(
             status_code=400,
@@ -79,11 +84,11 @@ def write_receipt(payload: WriteReceiptToolRequest, request: Request):
         ) from exc
 
 
-# ✅ Fetch artifact
 @router.post("/tools/fetch-artifact")
 def fetch_artifact(payload: FetchArtifactToolRequest):
     try:
-        return tooling.fetch_artifact(payload)
+        result = tooling.fetch_artifact(payload)
+        return {"status": "success", "result": result}
     except Exception as exc:
         raise HTTPException(
             status_code=404,
@@ -94,11 +99,12 @@ def fetch_artifact(payload: FetchArtifactToolRequest):
             },
         )
 
-# ✅ Resolve replay
+
 @router.post("/tools/resolve-replay")
 def resolve_replay(payload: ResolveReplayToolRequest):
     try:
-        return tooling.resolve_replay(payload)
+        result = tooling.resolve_replay(payload)
+        return {"status": "success", "result": result}
     except Exception as exc:
         raise HTTPException(
             status_code=400,
@@ -110,13 +116,15 @@ def resolve_replay(payload: ResolveReplayToolRequest):
         ) from exc
 
 
-# ✅ Download generated DOCX artifact
 @router.get("/outputs/{filename}")
 def get_local_output(filename: str):
     path = ROOT / "artifacts" / filename
 
     if not path.exists():
-        raise HTTPException(status_code=404, detail="not_found")
+        raise HTTPException(
+            status_code=404,
+            detail={"error": "not_found"}
+        )
 
     return FileResponse(
         path,

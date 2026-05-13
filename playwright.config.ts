@@ -22,7 +22,7 @@ export default defineConfig({
   },
 
   webServer: {
-command: 'PYTHONPATH=. python -m uvicorn app.main:app --host 127.0.0.1 --port 8000',
+    command: 'python -m uvicorn main:app --app-dir app --host 127.0.0.1 --port 8000',
     url: 'http://127.0.0.1:8000/',
     reuseExistingServer: true,
     timeout: 30000,

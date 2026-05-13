@@ -18,38 +18,21 @@ dev = [
   "pytest",
   "pylint",
   "jsonschema",
-  "fastapi",
   "httpx",
   "pydantic",
-  "python-multipart",
-  "debugpy",
-
+  "debugpy"
 ]
 
 [tool.pytest.ini_options]
-testpaths = [
-  "tests"
-]
-addopts = [
-  "-q",
-  "--import-mode=importlib"
-]
+testpaths = ["tests"]
+addopts = ["-q", "--import-mode=importlib"]
 
 [tool.pylint.main]
-py-version = "3.11"
+py-version = "3.12"
 recursive = true
 
-
-
 [tool.pylint.format]
 max-line-length = 120
-
-
-
-
-[tool.pylint.format]
-max-line-length = 120
-
 
 [tool.pylint.messages_control]
 disable = [
@@ -58,8 +41,6 @@ disable = [
   "missing-function-docstring",
   "too-few-public-methods"
 ]
-
-
 
 [tool.pylint.design]
 max-args = 8
@@ -77,25 +58,3 @@ omit = [
 
 [tool.setuptools.packages.find]
 where = ["app"]
-
-[tool.pylint.format]
-max-line-length = 100
-
-
-
-[tool.pylint.design]
-max-args = 8
-max-locals = 20
-max-branches = 15
-
-
-
-
-[tool.coverage.run]
-source = ["app"]
-omit = [
-  ".venv/*",
-  "*/site-packages/*",
-  "tests/*",
-  "__pycache__/*"
-]

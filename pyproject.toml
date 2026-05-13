@@ -9,11 +9,8 @@ requires-python = ">=3.11"
 dependencies = [
   "fastapi",
   "uvicorn[standard]",
-
   "python-multipart",
-
-
-  "python-docx"
+  "python-docx",
 ]
 
 [project.optional-dependencies]
@@ -23,12 +20,9 @@ dev = [
   "jsonschema",
   "fastapi",
   "httpx",
-
   "pydantic",
   "python-multipart",
-  "debugpy"
-
-  "pydantic"
+  "debugpy",
 
 ]
 

@@ -3,8 +3,6 @@ uvicorn[standard]==0.34.0
 
 pydantic==2.11.*
 
-pydantic==2.10.6
-
 PyYAML==6.0.2
 jsonschema==4.23.0
 python-multipart==0.0.20
@@ -18,5 +16,3 @@ pypdf
 pytest
 pytest-asyncio
 httpx
-
-python-docx

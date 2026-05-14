@@ -9,8 +9,13 @@ on:
 jobs:
   playwright-e2e:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+-       name: Verify Python app import
+        run: |
+          python -c "import app; import app.main; print('Python app import OK')"
 
-    steps:
+      steps:
       - uses: actions/checkout@v5
 
       - name: Setup Python

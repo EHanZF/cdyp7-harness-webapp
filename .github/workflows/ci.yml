@@ -30,7 +30,7 @@ jobs:
       # ✅ important fix
 
       - name: Run pytest (skip contract JSON for now)
-        run: PYTHONPATH=. pytest -c pytest.ini -k "not tooling_api_contract"
+        run: PYTHONPATH=. pytest -c pytest.ini ignore=tests/contract
 
 
 

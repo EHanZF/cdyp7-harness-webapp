@@ -1,0 +1,106 @@
+name: Release Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: mcp-harness-api
+
+jobs:
+# ✅ BUILD ONCE (artifact creation)
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tag }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set image tag
+        id: meta
+        run: echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image
+        run: |
+          docker build -t $IMAGE_NAME:${{ steps.meta.outputs.tag }} .
+
+      - name: Save Docker image
+        run: |
+          docker save $IMAGE_NAME:${{ steps.meta.outputs.tag }} > image.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: image
+          path: image.tar
+
+# ✅ DEV DEPLOY (AUTO)
+  deploy-dev:
+    runs-on: ubuntu-latest
+    needs: build
+
+    environment: dev
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: image
+
+      - name: Load Docker image
+        run: docker load < image.tar
+
+      - name: Deploy to Azure (DEV)
+        run: |
+          az webapp config container set \
+            --name ${{ secrets.AZURE_DEV_APP_NAME }} \
+            --resource-group ${{ secrets.AZURE_DEV_RG }} \
+            --docker-custom-image-name $IMAGE_NAME:${{ github.sha }}
+
+# ✅ STAGING DEPLOY (OPTIONAL APPROVAL)
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+
+    environment:
+      name: staging
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: image
+
+      - name: Load Docker image
+        run: docker load < image.tar
+
+      - name: Deploy to Azure (STAGING)
+        run: |
+          az webapp config container set \
+            --name ${{ secrets.AZURE_STAGING_APP_NAME }} \
+            --resource-group ${{ secrets.AZURE_STAGING_RG }} \
+            --docker-custom-image-name $IMAGE_NAME:${{ github.sha }}
+
+# ✅ PRODUCTION DEPLOY (MANUAL APPROVAL)
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+
+    environment:
+      name: production
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: image
+
+      - name: Load Docker image
+        run: docker load < image.tar
+
+      - name: Deploy to Azure (PROD)
+        run: |
+          az webapp config container set \
+            --name ${{ secrets.AZURE_PROD_APP_NAME }} \
+            --resource-group ${{ secrets.AZURE_PROD_RG }} \
+            --docker-custom-image-name $IMAGE_NAME:${{ github.sha }}

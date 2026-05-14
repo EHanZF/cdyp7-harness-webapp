@@ -1,7 +1,7 @@
 [
   {
     "path": "README.md",
-<<<<<<< HEAD
+
     "sha256": "12cbc50fd476345d9b96234ae7a1347ea3d7952fe04b9893750465cd76e29f14",
     "bytes": 680
   },
@@ -101,7 +101,7 @@
     "bytes": 150
   }
 ]
-=======
+
     "sha256": "6829c49f0ff22474a963f4c36bafab54e3b2accc439870143ae7121860682572",
     "bytes": 941
   },
@@ -296,4 +296,3 @@
     "bytes": 114
   }
 ]
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)

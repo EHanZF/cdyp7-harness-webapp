@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Document Ingestion</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0b1220;
+      color: #e5e7eb;
+      padding: 2rem;
+    }
+    .card {
+      max-width: 640px;
+      margin: auto;
+      background: #111827;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    }
+    input, button {
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    pre {
+      background: #020617;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>📄 Document Ingestion</h1>
+    <p>Upload documents to be parsed, chunked, and embedded for agent retrieval.</p>
+
+    <input type="file" id="file" multiple />
+    <button onclick="upload()">Ingest Documents</button>
+
+    <pre id="result"></pre>
+  </div>
+
+  <script>
+    async function upload() {
+      const input = document.getElementById("file");
+      if (!input.files.length) return;
+
+      const form = new FormData();
+      for (const file of input.files) {
+        form.append("files", file);
+      }
+
+      const res = await fetch("/ui/ingest", {
+        method: "POST",
+        body: form
+      });
+
+      const data = await res.json();
+      document.getElementById("result").textContent =
+        JSON.stringify(data, null, 2);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,24 +1,22 @@
-<<<<<<< HEAD
+# app/api/mcp_routes.py
+# pylint: disable=too-many-return-statements,broad-exception-caught
 
-=======
->>>>>>> aa3d6e5 (Add VSCode launch configuration and update pylint settings; fix exception handling in routes and update tests)
-# pylint: disable=too-many-return-statements
+from __future__ import annotations
 
+import json
 from typing import Any
 
-from fastapi import APIRouter, Header, HTTPException, Request
-=======
-from typing import Any
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import ValidationError
 
-from fastapi import APIRouter, Body, Header, HTTPException, Request
-
-
-router = APIRouter()
-
-INTERNAL_RUNTIME_VALUE = "intent-boundary"
+from app.core.agent_context import AgentContext, get_mcp_context
+from app.mcp.registry import TOOL_REGISTRY, list_tools
 
 
-def jsonrpc_result(request_id: Any, result: Any) -> dict[str, Any]:
+router = APIRouter(prefix="/mcp", tags=["mcp"])
+
+
+def _jsonrpc_result(request_id: Any, result: Any) -> dict[str, Any]:
     return {
         "jsonrpc": "2.0",
         "id": request_id,
@@ -26,7 +24,7 @@ def jsonrpc_result(request_id: Any, result: Any) -> dict[str, Any]:
     }
 
 
-def jsonrpc_error(
+def _jsonrpc_error(
     request_id: Any,
     code: int,
     message: str,
@@ -46,222 +44,188 @@ def jsonrpc_error(
         "error": error,
     }
 
+@router.post("/tools/call")
+async def mcp_tools_call_compat(
+    payload: dict[str, Any],
+    ctx: AgentContext = Depends(get_mcp_context),
+) -> dict[str, Any]:
+    tool_name = payload.get("tool_name")
+    arguments = payload.get("arguments") or {}
 
-@router.post("/mcp")
-async def mcp_endpoint(
-    request: Request,
-    x_internal_runtime: str | None = Header(default=None),
-):
-    if x_internal_runtime != INTERNAL_RUNTIME_VALUE:
+    if not isinstance(tool_name, str) or not tool_name:
         raise HTTPException(
-            status_code=403,
-            detail="mcp_endpoint_internal_only",
+            status_code=400,
+            detail="tool_name_required",
         )
 
-    payload: Any = await request.json()
-
-    if isinstance(payload, list):
-        return jsonrpc_error(
-            request_id=None,
-            code=-32600,
-            message="JSON-RPC batch requests are denied",
+    if not isinstance(arguments, dict):
+        raise HTTPException(
+            status_code=400,
+            detail="arguments_must_be_object",
         )
 
-    if not isinstance(payload, dict):
-        return jsonrpc_error(
-            request_id=None,
-            code=-32600,
-            message="JSON-RPC request must be an object",
+    handler = TOOL_REGISTRY.get(tool_name)
+
+    if handler is None:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "fail_closed": True,
+                "reason": "tool_not_registered",
+                "tool": tool_name,
+            },
         )
 
+    result = await handler(ctx, arguments)
+
+    return {
+        "tool_name": tool_name,
+        "result": result,
+    }
+
+@router.post("")
+async def mcp_jsonrpc(
+    payload: dict[str, Any],
+    ctx: AgentContext = Depends(get_mcp_context),
+) -> dict[str, Any]:
     request_id = payload.get("id")
 
     if payload.get("jsonrpc") != "2.0":
-        return jsonrpc_error(
+        return _jsonrpc_error(
             request_id=request_id,
             code=-32600,
-            message="jsonrpc must be 2.0",
+            message="Invalid Request",
+            data="jsonrpc must be '2.0'",
         )
 
     method = payload.get("method")
+    params = payload.get("params") or {}
 
-    if method == "tools/list":
-        return jsonrpc_result(
+    if not isinstance(params, dict):
+        return _jsonrpc_error(
+            request_id=request_id,
+            code=-32602,
+            message="Invalid params",
+            data="params must be an object",
+        )
+
+    try:
+        if method == "initialize":
+            return _jsonrpc_result(
+                request_id=request_id,
+                result={
+                    "protocolVersion": "2025-11-25",
+                    "capabilities": {
+                        "tools": {
+                            "listChanged": False,
+                        }
+                    },
+                    "serverInfo": {
+                        "name": "engineering-agent-control-plane",
+                        "version": "0.1.0",
+                    },
+                },
+            )
+
+        if method == "tools/list":
+            return _jsonrpc_result(
+                request_id=request_id,
+                result={
+                    "tools": list_tools(),
+                },
+            )
+
+        if method == "tools/call":
+            name = params.get("name")
+            arguments = params.get("arguments") or {}
+
+            if not isinstance(name, str) or not name:
+                return _jsonrpc_error(
+                    request_id=request_id,
+                    code=-32602,
+                    message="Invalid params",
+                    data="params.name must be a non-empty string",
+                )
+
+            if not isinstance(arguments, dict):
+                return _jsonrpc_error(
+                    request_id=request_id,
+                    code=-32602,
+                    message="Invalid params",
+                    data="params.arguments must be an object",
+                )
+
+            handler = TOOL_REGISTRY.get(name)
+
+            if handler is None:
+                return _jsonrpc_error(
+                    request_id=request_id,
+                    code=-32601,
+                    message="Tool not found",
+                    data=name,
+                )
+
+            result = await handler(ctx, arguments)
+
+            return _jsonrpc_result(
+                request_id=request_id,
+                result={
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": json.dumps(result, separators=(",", ":")),
+                        }
+                    ],
+                    "isError": False,
+                },
+            )
+
+        return _jsonrpc_error(
+            request_id=request_id,
+            code=-32601,
+            message="Method not found",
+            data=method,
+        )
+
+    except PermissionError as exc:
+        return _jsonrpc_result(
             request_id=request_id,
             result={
-                "tools": [
+                "content": [
                     {
-                        "name": "generate_requirements",
-                        "description": "Generate non-authoritative requirement snapshot artifact.",
-                        "inputSchema": {
-                            "type": "object",
-                            "required": [
-                                "task_id",
-                                "artifact_type",
-                                "source",
-                                "snapshot",
-                                "validation_required",
-                                "evidence_scope",
-                            ],
-                            "properties": {
-                                "task_id": {"type": "string"},
-                                "artifact_type": {"const": "requirement_snapshot"},
-                                "source": {
-                                    "type": "string",
-                                    "enum": ["ptc", "doors"],
-                                },
-                                "snapshot": {
-                                    "type": "object",
-                                    "required": ["$ref"],
-                                    "properties": {
-                                        "$ref": {"type": "string"},
-                                    },
-                                },
-                                "validation_required": {"type": "boolean"},
-                                "evidence_scope": {
-                                    "type": "string",
-                                    "enum": ["summary", "full"],
-                                },
-                            },
-                            "additionalProperties": False,
-                        },
-                    },
-                    {
-                        "name": "releaseSheetReviewTool",
-                        "description": "Deterministic release sheet review against exported requirement snapshots.",
-                        "inputSchema": {
-                            "type": "object",
-                            "additionalProperties": True,
-                        },
-                    },
-                    {
-                        "name": "math.mapNodeLinks",
-                        "description": "Deterministic cosine-similarity node link mapper.",
-                        "inputSchema": {
-                            "type": "object",
-                            "additionalProperties": True,
-                        },
-                    },
-                ]
+                        "type": "text",
+                        "text": str(exc),
+                    }
+                ],
+                "isError": True,
             },
         )
 
-    if method == "tools/call":
-        params = payload.get("params")
-
-        if not isinstance(params, dict):
-            return jsonrpc_error(
-                request_id=request_id,
-                code=-32602,
-                message="params must be an object",
-            )
-
-        name = params.get("name")
-        arguments = params.get("arguments")
-
-        if not isinstance(name, str) or not name:
-            return jsonrpc_error(
-                request_id=request_id,
-                code=-32602,
-                message="params.name must be a non-empty string",
-            )
-
-        if not isinstance(arguments, dict):
-            return jsonrpc_error(
-                request_id=request_id,
-                code=-32602,
-                message="params.arguments must be an object",
-            )
-
-        if name == "generate_requirements":
-            return jsonrpc_result(
-                request_id=request_id,
-                result={
-                    "content": [
-                        {
-                            "type": "json",
-                            "json": {
-                                "status": "accepted",
-                                "artifact_type": arguments.get("artifact_type"),
-                                "task_id": arguments.get("task_id"),
-                                "source": arguments.get("source"),
-                                "snapshot": arguments.get("snapshot"),
-                                "validation_required": arguments.get("validation_required"),
-                                "evidence_scope": arguments.get("evidence_scope"),
-                                "authority_effect": "none",
-                                "persistence_effect": "none",
-                                "promotion_gate": "closed_for_authority",
-                            },
-                        }
-                    ],
-                    "isError": False,
-                },
-            )
-
-        if name == "releaseSheetReviewTool":
-            content_field_names = arguments.get("content_field_names", [])
-
-            return jsonrpc_result(
-                request_id=request_id,
-                result={
-                    "content": [
-                        {
-                            "type": "json",
-                            "json": {
-                                "status": "accepted",
-                                "sheet_id": arguments.get("sheet_id"),
-                                "source": arguments.get("source"),
-                                "fields_reviewed": len(content_field_names),
-                                "authority_effect": "none",
-                                "persistence_effect": "none",
-                                "promotion_gate": "closed_for_authority",
-                            },
-                        }
-                    ],
-                    "isError": False,
-                },
-            )
-
-        if name == "math.mapNodeLinks":
-            nodes = arguments.get("nodes", [])
-            policy = arguments.get("policy", {})
-
-            return jsonrpc_result(
-                request_id=request_id,
-                result={
-                    "content": [
-                        {
-                            "type": "json",
-                            "json": {
-                                "status": "accepted",
-                                "nodeSetId": arguments.get("nodeSetId"),
-                                "nodeCount": len(nodes),
-                                "metric": policy.get("metric", "cosine"),
-                                "authority_effect": "none",
-                                "persistence_effect": "none",
-                                "promotion_gate": "closed_for_authority",
-                            },
-                        }
-                    ],
-                    "isError": False,
-                },
-            )
-
-        return jsonrpc_error(
+    except ValidationError as exc:
+        return _jsonrpc_result(
             request_id=request_id,
-            code=-32000,
-            message="Tool execution failed",
-            data={
-                "reason": "tool_not_registered",
-                "tool": name,
+            result={
+                "content": [
+                    {
+                        "type": "text",
+                        "text": exc.json(),
+                    }
+                ],
+                "isError": True,
             },
         )
 
-    return jsonrpc_error(
-        request_id=request_id,
-        code=-32601,
-        message="Unknown JSON-RPC method",
-        data={
-            "reason": "unknown_method",
-        },
-    )
+    except Exception as exc:
+        return _jsonrpc_error(
+            request_id=request_id,
+            code=-32603,
+            message="Internal error",
+            data=str(exc),
+        )
+
+
+@router.get("/tools/list")
+async def mcp_tools_list_compat() -> dict[str, Any]:
+    return {
+        "tools": list_tools(),
+    }

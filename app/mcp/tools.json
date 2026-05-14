@@ -1,0 +1,158 @@
+{
+  "namespace": "harness",
+  "version": "1.1",
+  "tools": [
+    {
+      "name": "harness.generate_release_sheet",
+      "description": "Generates a System Release Sheet DOCX using validated input data. Does not approve or publish releases.",
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "document_id",
+          "system",
+          "cat_level",
+          "template_ref",
+          "release",
+          "identification",
+          "software",
+          "reason_for_release",
+          "release_documentation",
+          "known_issues"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "document_id": { "type": "string" },
+          "system": { "type": "string" },
+          "cat_level": {
+            "type": "string",
+            "enum": ["CAT1", "CAT2", "CAT3", "CAT4", "CAT5"]
+          },
+          "template_ref": { "type": "string" },
+          "release": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "identification": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "software": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "reason_for_release": { "type": "string" },
+          "release_documentation": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "known_issues": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    {
+      "name": "harness.validate_release_sheet",
+      "description": "Validates generated release sheet against schema and CAT rules.",
+      "input_schema": {
+        "type": "object",
+        "required": ["artifact_id", "validation_profile"],
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": { "type": "string" },
+          "validation_profile": {
+            "type": "string",
+            "enum": ["system_release_sheet", "system_release_sheet_cat5"]
+          }
+        }
+      }
+    },
+    {
+      "name": "harness.write_receipt",
+      "description": "Writes immutable receipt to receipts container.",
+      "input_schema": {
+        "type": "object",
+        "required": ["event_type", "actor", "artifact_id", "sha256"],
+        "additionalProperties": false,
+        "properties": {
+          "event_type": { "type": "string" },
+          "actor": { "type": "string" },
+          "artifact_id": { "type": "string" },
+          "sha256": { "type": "string" },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    {
+      "name": "harness.fetch_artifact",
+      "description": "Returns metadata for controlled read-only artifact.",
+      "input_schema": {
+        "type": "object",
+        "required": ["artifact_id"],
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": { "type": "string" }
+        }
+      }
+    },
+    {
+      "name": "harness.resolve_replay",
+      "description": "Resolves prior execution using cached artifacts and receipts.",
+      "input_schema": {
+        "type": "object",
+        "required": ["run_id", "adapter_version"],
+        "additionalProperties": false,
+        "properties": {
+          "run_id": { "type": "string" },
+          "adapter_version": { "type": "string" }
+        }
+      }
+    },
+    {
+      "name": "memory.semantic_search",
+      "description": "Namespace-scoped semantic search over engineering memory.",
+      "input_schema": {
+        "type": "object",
+        "required": ["namespace", "query"],
+        "additionalProperties": false,
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "description": "Project or harness namespace that bounds accessible knowledge."
+          },
+          "query": {
+            "type": "string",
+            "description": "Natural language query describing the information need."
+          },
+          "top_k": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "default": 5
+          },
+          "filters": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "document_type": {
+                "type": "string",
+                "enum": ["requirements", "specification", "analysis", "evidence"]
+              },
+              "system": {
+                "type": "string"
+              },
+              "cat_level": {
+                "type": "string",
+                "enum": ["CAT1", "CAT2", "CAT3", "CAT4", "CAT5"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

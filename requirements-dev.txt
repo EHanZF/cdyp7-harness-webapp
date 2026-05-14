@@ -4,9 +4,6 @@ httpx>=0.27
 pytest>=8.0
 pytest-cov>=5.0
 python-dotenv>=1.0
-<<<<<<< HEAD
 python-docx
 debugpy>=1.7
-=======
-python-docx
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)
+pre-commit>=3.0

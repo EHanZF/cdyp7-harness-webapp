@@ -219,3 +219,5 @@ def get_router() -> APIRouter:
         return {"query": q, "results": results}
 
     return router
+
+router = get_router()

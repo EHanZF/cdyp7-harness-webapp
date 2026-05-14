@@ -1,10 +1,8 @@
 fastapi==0.115.8
 uvicorn[standard]==0.34.0
-<<<<<<< HEAD
+
 pydantic==2.11.*
-=======
-pydantic==2.10.6
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)
+
 PyYAML==6.0.2
 jsonschema==4.23.0
 python-multipart==0.0.20
@@ -12,12 +10,9 @@ python-docx==1.1.2
 azure-identity==1.19.0
 azure-storage-blob==12.24.0
 azure-keyvault-secrets==4.9.0
-<<<<<<< HEAD
+
 openai
 pypdf
 pytest
 pytest-asyncio
 httpx
-=======
-python-docx
->>>>>>> b0f8b70 (Add tooling API contract tests and validation output)

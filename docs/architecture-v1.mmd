@@ -1,0 +1,87 @@
+```mermaid
+flowchart TB
+  %% =========================
+  %% Agent Layer
+  %% =========================
+  Agent["Agent<br/>app/agent/release_sheet_editor.py"]
+  AgentCtx["Agent Context<br/>contracts/context.py<br/>contracts/decisions.py"]
+
+  Agent --> AgentCtx
+
+  %% =========================
+  %% MCP Tool Surface
+  %% =========================
+  subgraph MCP["MCP Tool Server<br/>app/mcp"]
+    MCPRoutes["MCP Routes<br/>app/api/mcp_routes.py"]
+    ToolRegistry["Tool Registry<br/>app/mcp/registry.py"]
+
+    subgraph MCPTools["MCP Tools"]
+      MemSearchTool["memory.semantic_search<br/>app/mcp/tools/memory_semantic_search.py"]
+      GenTool["harness.generate_release_sheet<br/>app/mcp/tools/generate_release_sheet.py"]
+      ValTool["harness.validate_release_sheet<br/>app/mcp/tools/validate_release_sheet.py"]
+      ReceiptTool["harness.write_receipt<br/>app/mcp/tools/write_receipt.py"]
+    end
+
+    MCPRoutes --> ToolRegistry
+    ToolRegistry --> MemSearchTool
+    ToolRegistry --> GenTool
+    ToolRegistry --> ValTool
+    ToolRegistry --> ReceiptTool
+  end
+
+  Agent --> MCPRoutes
+
+  %% =========================
+  %% Control Plane Core
+  %% =========================
+  subgraph ControlPlane["Control Plane"]
+    subgraph Memory["Semantic Memory"]
+      SemanticSearch["Semantic Search Core<br/>app/memory/semantic_search.py"]
+      RetrievalAttest["Retrieval Attestations<br/>app/memory/retrieval_attestations.py"]
+    end
+
+    subgraph Harness["Artifact Harness"]
+      Generate["Generate Release Sheet<br/>app/harness/generate.py"]
+      Validate["Validate Release Sheet<br/>app/harness/validate.py"]
+    end
+
+    subgraph Provenance["Provenance & Audit"]
+      Receipts["Receipts<br/>app/provenance/receipts.py"]
+      Graph["Provenance Graph<br/>app/provenance/graph.py"]
+    end
+  end
+
+  MemSearchTool --> SemanticSearch
+  SemanticSearch --> RetrievalAttest
+
+  GenTool --> Generate
+  ValTool --> Validate
+  ReceiptTool --> Receipts
+  Receipts --> Graph
+
+  %% =========================
+  %% Storage Layer
+  %% =========================
+  subgraph Storage["Storage"]
+    Postgres["Postgres<br/>documents, chunks,<br/>retrieval_attestations,<br/>receipts, provenance"]
+    Qdrant["Qdrant<br/>engineering_memory_chunks"]
+  end
+
+  SemanticSearch --> Qdrant
+  RetrievalAttest --> Postgres
+  Receipts --> Postgres
+  Graph --> Postgres
+  Generate --> Postgres
+  Validate --> Postgres
+
+  %% =========================
+  %% Read/Admin Surfaces
+  %% =========================
+  subgraph Dashboard["Read / Admin APIs"]
+    OpenAPI["OpenAPI<br/>openapi.yaml"]
+    DashboardAPI["Dashboard API<br/>app/dashboard/api.py"]
+  end
+
+  Postgres --> DashboardAPI
+  DashboardAPI --> OpenAPI
+  ```

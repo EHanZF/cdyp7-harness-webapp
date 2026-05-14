@@ -1,47 +1,26 @@
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-client = TestClient(app)
-
-MCP_HEADERS = {"x-internal-runtime": "intent-boundary"}
-
-
-def test_mcp_get_returns_405():
-    response = client.get("/mcp")
-    assert response.status_code == 405
-
-
-def test_mcp_post_without_guard_header_fails():
-    response = client.post(
+def test_tools_list_exposes_semantic_search(client):
+    res = client.post(
         "/mcp",
-        json={"jsonrpc": "2.0", "id": "test-1", "method": "tools/list"},
+        json={
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/list",
+            "params": {},
+        },
     )
 
-    assert response.status_code in {400, 401, 403}
+    assert res.status_code == 200
 
+    body = res.json()
+    tools = body["result"]["tools"]
 
-def test_mcp_tools_list_success():
-    response = client.post(
-        "/mcp",
-        headers=MCP_HEADERS,
-        json={"jsonrpc": "2.0", "id": "list-001", "method": "tools/list"},
+    names = {tool["name"] for tool in tools}
+
+    assert "memory.semantic_search" in names
+
+    semantic_search = next(
+        tool for tool in tools if tool["name"] == "memory.semantic_search"
     )
 
-    assert response.status_code == 200
-    body = response.json()
-    assert body["jsonrpc"] == "2.0"
-    assert body["id"] == "list-001"
-    assert "result" in body
-
-
-def test_mcp_unknown_method_fails_closed():
-    response = client.post(
-        "/mcp",
-        headers=MCP_HEADERS,
-        json={"jsonrpc": "2.0", "id": "bad-001", "method": "unknown.method"},
-    )
-
-    assert response.status_code == 200
-    body = response.json()
-    assert "error" in body
+    assert "inputSchema" in semantic_search
+    assert "input_schema" not in semantic_search

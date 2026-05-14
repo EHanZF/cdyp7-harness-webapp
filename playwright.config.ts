@@ -13,7 +13,7 @@ export default defineConfig({
     ['html', { outputFolder: 'playwright-report', open: 'never' }],
   ],
   use: {
-    baseURL: 'http://127.0.0.1:8000',
+    baseURL: 'http://127.0.0.1:8001',
     headless: true,
     viewport: { width: 1280, height: 720 },
     actionTimeout: 0,
@@ -22,8 +22,8 @@ export default defineConfig({
   },
 
   webServer: {
-    command: 'python -m uvicorn app.main:app --host 127.0.0.1 --port 8000',
-    url: 'http://127.0.0.1:8000/',
+    command: 'python -m uvicorn app.main:app --host 127.0.0.1 --port 8001',
+    url: 'http://127.0.0.1:8001/',
     reuseExistingServer: true,
     timeout: 30000,
   },

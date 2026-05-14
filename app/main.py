@@ -7,7 +7,8 @@ from fastapi.staticfiles import StaticFiles
 
 # ✅ Routers
 from app.api.routes import router as api_router
-from app.mcp.routes import router as mcp_router
+from app.api.mcp_routes import router as mcp_router
+from app.api.memory_routes import router as memory_router
 from app.api.dashboard import router as dashboard_router
 
 from app.core.config import assert_adapter, load_adapter
@@ -24,7 +25,7 @@ if os.getenv("ENV") == "production":
 # ✅ Create app FIRST
 app = FastAPI(
     title="CDYP7 Runtime Harness Tooling API",
-    version="1.0.0",
+    version="1.1.0",
 )
 
 
@@ -37,6 +38,7 @@ app.state.adapter = adapter
 # ✅ Register routers (ONLY here)
 app.include_router(api_router)
 app.include_router(mcp_router)
+app.include_router(memory_router)
 app.include_router(dashboard_router)
 
 

@@ -1,51 +1,9 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "configurations": [
     {
-      "name": "CDYP7 API - FastAPI/Uvicorn stable",
-      "type": "python",
-
-      "name": "CDYP7 API - FastAPI/Uvicorn",
-
-      "name": "CDYP7 API - FastAPI/Uvicorn stable",
-
+      "name": "FastAPI: cdyp7 harness",
       "type": "debugpy",
-
-      "request": "launch",
-      "module": "uvicorn",
-      "args": [
-        "app.main:app",
-        "--host",
-        "127.0.0.1",
-        "--port",
-        "8000"
-      ],
-
-      "console": "internalConsole",
-
-      "console": "internalConsole",
-
-      "justMyCode": false,
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}",
-
-        "ENABLE_MCP_UI": "true",
-        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
-
-        "ENABLE_MCP_UI": "true"
-
-        "ENABLE_MCP_UI": "true",
-        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
-
-      }
-    },
-    {
-      "name": "CDYP7 API - FastAPI/Uvicorn reload",
-
-      "type": "python",
-
-      "type": "debugpy",
-
       "request": "launch",
       "module": "uvicorn",
       "args": [
@@ -57,123 +15,24 @@
         "8000"
       ],
       "jinja": true,
-      "justMyCode": false,
-      "subProcess": true,
+      "justMyCode": true,
       "env": {
-        "PYTHONPATH": "${workspaceFolder}",
-
-        "ENABLE_MCP_UI": "true",
-        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
+        "ENV": "development",
+        "PYTHONPATH": "${workspaceFolder}"
       }
     },
     {
-      "name": "CDYP7 API - FastAPI (debugpy listen 127.0.0.1:5678 - no-wait)",
-      "type": "python",
-      "request": "launch",
-      "module": "debugpy",
-      "args": [
-        "--listen",
-        "127.0.0.1:5678",
-        "--module",
-        "uvicorn",
-        "app.main:app",
-        "--host",
-        "127.0.0.1",
-        "--port",
-        "8000"
-      ],
-      "console": "integratedTerminal",
-      "jinja": true,
-      "justMyCode": false,
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}",
-        "ENABLE_MCP_UI": "true",
-        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
-      }
-    },
-    {
-      "name": "CDYP7 API - FastAPI (debugpy 8000)",
-      "type": "python",
-      "request": "launch",
-      "module": "debugpy",
-      "args": [
-        "--listen",
-        "127.0.0.1:5678",
-        "--module",
-        "uvicorn",
-        "app.main:app",
-        "--host",
-        "127.0.0.1",
-        "--port",
-        "8000"
-      ],
-      "console": "integratedTerminal",
-      "jinja": true,
-      "justMyCode": false,
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}",
-        "ENABLE_MCP_UI": "true",
-        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
-      }
-    },
-    {
-      "name": "CDYP7 API - FastAPI (quick run)",
-      "type": "python",
-      "request": "launch",
-      "module": "uvicorn",
-      "args": [
-        "app.main:app",
-        "--host",
-        "127.0.0.1",
-        "--port",
-        "8000"
-      ],
-      "console": "integratedTerminal",
-      "jinja": true,
-      "justMyCode": false,
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}",
-        "ENABLE_MCP_UI": "true",
-        "DEBUGPY_PROCESS_SPAWN_TIMEOUT": "120"
-      }
-    },
-    {
-      "name": "CDYP7 API - Attach to debugpy",
-      "type": "python",
-      "request": "attach",
-      "connect": {
-        "host": "127.0.0.1",
-        "port": 5678
-      },
-      "justMyCode": false,
-      "pathMappings": [
-        {
-          "localRoot": "${workspaceFolder}",
-          "remoteRoot": "${workspaceFolder}"
-        }
-      ]
-    }
-  ]
-}
-
-        "ENABLE_MCP_UI": "true"
-      }
-    },
-    {
-      "name": "CDYP7 API - Attach to debugpy",
+      "name": "Pytest",
       "type": "debugpy",
-      "request": "attach",
-      "connect": {
-        "host": "127.0.0.1",
-        "port": 5678
-      },
-      "justMyCode": false,
-      "pathMappings": [
-        {
-          "localRoot": "${workspaceFolder}",
-          "remoteRoot": "${workspaceFolder}"
-        }
-      ]
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "-q"
+      ],
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
     }
   ]
 }

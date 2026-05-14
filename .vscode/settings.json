@@ -1,17 +1,22 @@
 {
-    "python.testing.pytestArgs": [
-        "tests"
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "python.terminal.activateEnvironment": true,
-    "python.terminal.useEnvFile": true,
-    "python.envFile": "${workspaceFolder}/.env",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}"
+  ],
 
-    "makefile.makefilePath": "C:\\Users\\z0190004\\ZF_Braking_Agent\\cdyp7-harness-tooling-api-azure-webapp",
-    "makefile.buildLog": "C:\\Users\\z0190004\\ZF_Braking_Agent\\cdyp7-harness-tooling-api-azure-webapp",
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
 
-    "flake8.enabled": true,
-    "flake8.importStrategy": "fromEnvironment",
-    "flake8.args": []
+  "python.terminal.activateEnvironment": true,
+  "python.envFile": "${workspaceFolder}/.env",
+
+  "flake8.enabled": true,
+  "flake8.importStrategy": "fromEnvironment",
+  "flake8.args": [],
+
+  "editor.formatOnSave": true,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true
 }

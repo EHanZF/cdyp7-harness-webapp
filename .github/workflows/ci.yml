@@ -7,7 +7,6 @@ on:
       - main
 
 jobs:
-
   python-checks:
     runs-on: ubuntu-latest
 
@@ -30,9 +29,7 @@ jobs:
       # ✅ important fix
 
       - name: Run pytest (skip contract JSON for now)
-        run: PYTHONPATH=. pytest -c pytest.ini ignore=tests/contract
-
-
+        run: PYTHONPATH=. pytest -c pytest.ini --ignore=tests/contract
 
   lint:
     runs-on: ubuntu-latest
@@ -47,7 +44,6 @@ jobs:
       - run: pip install pre-commit
 
       - run: pre-commit run --all-files
-
 
   build-artifact:
     runs-on: ubuntu-latest

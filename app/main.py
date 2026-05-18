@@ -5,6 +5,11 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+app = FastAPI()
+
+# Serve the HTML UI
+app.mount("/", StaticFiles(directory="app/static", html=True), name="static")
+
 # ✅ Routers
 from app.api.routes import router as api_router
 from app.api.mcp_routes import router as mcp_router

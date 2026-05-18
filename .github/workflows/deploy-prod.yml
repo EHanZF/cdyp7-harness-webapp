@@ -1,0 +1,74 @@
+name: Deploy Production
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+
+jobs:
+    deploy-prod:
+        runs-on: ubuntu-latest
+        environment: production
+
+        steps:
+            - name: Checkout source
+              uses: actions/checkout@v5
+
+            - name: Setup Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+
+            - name: Build deployment package
+              run: |
+                  tar -czf mcp-app.tar.gz app requirements.txt startup.sh
+
+            - name: Deploy to Azure Web App
+              uses: azure/webapps-deploy@v2
+              with:
+                  app-name: ${{ vars.AZURE_PROD_APP_NAME }}
+                  publish-profile: ${{ secrets.AZURE_PROD_PUBLISH_PROFILE }}
+                  package: mcp-app.tar.gz
+
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "prod-*"
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build deployment package
+        run: |
+          tar -czf mcp-app.tar.gz app requirements.txt startup.sh
+
+      - name: Deploy to staging slot
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ vars.AZURE_APP_NAME }}
+          slot-name: staging
+          publish-profile: ${{ secrets.AZURE_STAGING_PUBLISH_PROFILE }}
+          package: mcp-app.tar.gz
+
+      - name: Swap staging to production
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az webapp deployment slot swap \
+              --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+              --name ${{ vars.AZURE_APP_NAME }} \
+              --slot staging

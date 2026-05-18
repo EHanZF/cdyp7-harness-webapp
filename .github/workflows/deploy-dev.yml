@@ -1,0 +1,28 @@
+name: Deploy Dev
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build deployment package
+        run: |
+          tar -czf mcp-app.tar.gz app requirements.txt startup.sh
+
+      - name: Deploy to Dev
+        run: |
+          echo "Deploying mcp-app.tar.gz to dev environment"
+          # az webapp deploy ...

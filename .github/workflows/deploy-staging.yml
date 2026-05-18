@@ -1,0 +1,33 @@
+name: Deploy Staging
+
+on:
+    workflow_dispatch:
+    push:
+        tags:
+            - "staging-*"
+
+jobs:
+    deploy-staging:
+        runs-on: ubuntu-latest
+        environment: staging
+
+        steps:
+            - name: Checkout source
+              uses: actions/checkout@v5
+
+            - name: Setup Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+
+            - name: Build deployment package
+              run: |
+                  tar -czf mcp-app.tar.gz app requirements.txt startup.sh
+
+            - name: Deploy to Azure Web App (staging slot)
+              uses: azure/webapps-deploy@v2
+              with:
+                  app-name: ${{ vars.AZURE_APP_NAME }}
+                  slot-name: staging
+                  publish-profile: ${{ secrets.AZURE_STAGING_PUBLISH_PROFILE }}
+                  package: mcp-app.tar.gz

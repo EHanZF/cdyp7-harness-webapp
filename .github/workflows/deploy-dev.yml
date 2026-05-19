@@ -19,59 +19,25 @@ env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/mcp-harness-api
 
 jobs:
-  deploy:
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main'
-
+  deploy-dev:
     runs-on: ubuntu-latest
     environment: dev
 
-    steps:
-
-    - name: Extract commit SHA from build
-      id: vars
-      run: |
-        echo "SHA=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
-
-    - name: Debug deployment target
-      run: |
-        echo "Deploying commit SHA: ${{ steps.vars.outputs.SHA }}"
-        echo "Using image: $IMAGE_NAME:${{ steps.vars.outputs.SHA }}"
-
-    # ✅ Azure login
+  steps:
     - name: Azure Login
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # ✅ Deploy EXACT image (immutable)
-    - name: Deploy container to Azure WebApp (DEV)
+    - name: Deploy to Azure (DEV)
       run: |
         az webapp config container set \
-          --name "$WEBAPP_NAME" \
-          --resource-group "$RESOURCE_GROUP" \
-          --docker-custom-image-name "$IMAGE_NAME:${{ steps.vars.outputs.SHA }}"
-      env:
-        WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
-        RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
-
-    # ✅ Optional: verify deployment health
-    - name: Verify deployment
-      run: |
-        sleep 10
-        curl -f https://$WEBAPP_NAME.azurewebsites.net/health
-      env:
-        WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main'
-
-    runs-on: ubuntu-latest
+          --name ${{ secrets.AZURE_DEV_APP_NAME }} \
+          --resource-group ${{ secrets.AZURE_DEV_RG }} \
+          --docker-custom-image-name ${{ secrets.ACR_LOGIN_SERVER }}/$IMAGE_NAME:${{ github.sha }}
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5

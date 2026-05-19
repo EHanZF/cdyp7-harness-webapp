@@ -1,83 +1,57 @@
-name: Deploy Production
+name: Deploy Prod (Immutable Promotion)
 
 on:
-    workflow_dispatch:
-    push:
-        branches:
-            - main
+  workflow_run:
+    workflows: ["Deploy Dev (Immutable)"]
+    types:
+      - completed
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/mcp-harness-api
 
 jobs:
-    deploy-prod:
-        runs-on: ubuntu-latest
-        environment: production
+  deploy:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
 
-        steps:
-            - name: Checkout source
-              uses: actions/checkout@v5
-
-            - name: Setup Python
-              uses: actions/setup-python@v5
-              with:
-                  python-version: "3.12"
-
-            - name: Build deployment package
-              run: |
-                  tar -czf mcp-app.tar.gz app requirements.txt startup.sh
-
-            - name: Deploy to Azure Web App
-              uses: azure/webapps-deploy@v2
-              with:
-                  app-name: ${{ vars.AZURE_PROD_APP_NAME }}
-                  publish-profile: ${{ secrets.AZURE_PROD_PUBLISH_PROFILE }}
-                  package: mcp-app.tar.gz
-
-
-on:
-  workflow_dispatch:
-  push:
-    tags:
-      - "prod-*"
-
-jobs:
-  deploy-prod:
     runs-on: ubuntu-latest
-    environment: production
+
+    # ✅ REQUIRED for production safety (manual approval)
+    environment: prod
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v5
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Build deployment package
+      - name: Extract commit SHA from Dev deploy
+        id: vars
         run: |
-          tar -czf mcp-app.tar.gz app requirements.txt startup.sh
+          echo "SHA=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
 
-      - name: Deploy to staging slot
-        uses: azure/webapps-deploy@v2
+      - name: Debug production deployment target
+        run: |
+          echo "Promoting commit SHA: ${{ steps.vars.outputs.SHA }}"
+          echo "Using image: $IMAGE_NAME:${{ steps.vars.outputs.SHA }}"
+
+      # ✅ Azure login
+      - name: Azure Login
+        uses: azure/login@v2
         with:
-          app-name: ${{ vars.AZURE_APP_NAME }}
-          slot-name: staging
-          publish-profile: ${{ secrets.AZURE_STAGING_PUBLISH_PROFILE }}
-          package: mcp-app.tar.gz
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Swap staging to production
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            az webapp deployment slot swap \
-              --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
-              --name ${{ vars.AZURE_APP_NAME }} \
-              --slot staging
+      # ✅ Deploy EXACT same image (immutable promotion)
+      - name: Deploy container to Azure WebApp (PROD)
+        run: |
+          az webapp config container set \
+            --name "$WEBAPP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --docker-custom-image-name "$IMAGE_NAME:${{ steps.vars.outputs.SHA }}"
+        env:
+          WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME_PROD }}
+          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP_PROD }}
 
-              - name: Build Docker image
-  run: |
-    docker build -t $IMAGE_NAME:${{ github.sha }} .
-
-    - name: Push Docker image
-  run: |
-          echo $CR_PAT | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker push $IMAGE_NAME:${{ github.sha }}
+      # ✅ Health check (fail fast if bad)
+      - name: Verify production deployment
+        run: |
+          sleep 15
+          curl -f https://$WEBAPP_NAME.azurewebsites.net/health
+        env:
+          WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME_PROD }}

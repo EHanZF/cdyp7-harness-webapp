@@ -18,22 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
 
-    steps:
-      - name: Extract commit SHA
-        id: vars
-        run: |
-          echo "SHA=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
-
-      - name: Debug deployment
-        run: |
-          echo "Deploying commit: ${{ steps.vars.outputs.SHA }}"
-          echo "Image: $IMAGE_NAME:${{ steps.vars.outputs.SHA }}"
-
-      # ✅ Azure login
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Azure Login
+      steps:
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       # ✅ Deploy immutable image
       - name: Deploy to Dev WebApp

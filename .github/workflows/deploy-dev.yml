@@ -1,4 +1,4 @@
-name: Deploy Dev (Immutable)
+name: Deploy Dev
 
 on:
   workflow_run:
@@ -6,23 +6,18 @@ on:
     types:
       - completed
 
-env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/mcp-harness-api
-
 jobs:
   deploy-dev:
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main'
-
+    name: Deploy Dev (Immutable)
     runs-on: ubuntu-latest
     environment: dev
 
-    - name: Azure Login
-      steps:
-      uses: azure/login@v2
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/mcp-harness-api
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
 
       # ✅ Deploy immutable image
       - name: Deploy to Dev WebApp

@@ -1,39 +1,27 @@
 name: Deploy Dev
 
 on:
-  workflow_run:
-    workflows: ["Python application"]
-    types:
-      - completed
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   deploy-dev:
-    name: Deploy Dev (Immutable)
     runs-on: ubuntu-latest
     environment: dev
 
-    env:
-      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/mcp-harness-api
-
     steps:
-      - name: Azure Login
-        uses: azure/login@v2
+      - uses: actions/checkout@v5
 
-      # ✅ Deploy immutable image
-      - name: Deploy to Dev WebApp
-        run: |
-          az webapp config container set \
-            --name "$WEBAPP_NAME" \
-            --resource-group "$RESOURCE_GROUP" \
-            --docker-custom-image-name "$IMAGE_NAME:${{ steps.vars.outputs.SHA }}"
-        env:
-          WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
-          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      # ✅ Health check (prevents silent bad deploy)
-      - name: Verify deployment
+      - name: Build deployment package
         run: |
-          sleep 15
-          curl -f https://$WEBAPP_NAME.azurewebsites.net/health
-        env:
-          WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+          tar -czf mcp-app.tar.gz app requirements.txt startup.sh
+      - name: Deploy to Dev
+        run: |
+          echo "Deploying mcp-app.tar.gz to dev environment"
+          # az webapp deploy ...

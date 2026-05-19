@@ -1,6 +1,7 @@
 # app/mcp/validators/features.py
 import csv
 
+
 def validate_features(file):
     rows = csv.DictReader(file.file.read().decode().splitlines())
     errors, warnings = [], []

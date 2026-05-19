@@ -1,0 +1,15 @@
+.status {
+    margin-top: 24px;
+    padding: 16px;
+    border-radius: 6px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.status.valid {
+    border-left: 6px solid #16a34a;
+}
+
+.status.invalid {
+    border-left: 6px solid #dc2626;
+}

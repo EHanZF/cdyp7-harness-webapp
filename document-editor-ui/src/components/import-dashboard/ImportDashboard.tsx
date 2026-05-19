@@ -1,42 +1,49 @@
-// ImportDashboard.tsx
 import { useState } from "react";
-import { DatasetSelector, DatasetType } from "./DatasetSelector";
-import { FileUploader } from "./FileUploader";
-import { validateImport } from "../../api/mcpValidation";
-import { importToDataverse } from "../../api/dataverse";
-import { ValidationSummary } from "./ValidationSummary";
+
+import { DatasetSelector } from "./DatasetSelector";
+import type { DatasetType } from "./DatasetSelector";
+
+import FileUploader from "./FileUploader";
+import { importData } from "../../api/importService";
+
+import type { ValidationResult } from "../types/ValidationResult";
 
 export function ImportDashboard() {
   const [dataset, setDataset] = useState<DatasetType>("MCP_FEATURES");
-  const [file, setFile] = useState<File | null>(null);
-  const [validation, setValidation] = useState<any>(null);
-
-  async function onValidate() {
-    if (!file) return;
-    const result = await validateImport(dataset, file);
-    setValidation(result);
-  }
+  const [file] = useState<File | null>(null);
+  const [validation, setValidation] = useState<ValidationResultType | null>(null);
 
   async function onImport() {
     if (!file || !validation?.valid) return;
-    await importToDataverse(dataset, file);
-    alert("Import completed");
+
+    try {
+      const result = await importData(dataset, file);
+      alert(result.success ? "✅ Import successful" : "❌ Import failed");
+    } catch (err) {
+      console.error(err);
+      alert("Import error");
+    }
   }
 
   return (
-    <>
+    <div>
+      <h2>Import Dashboard</h2>
+
       <DatasetSelector value={dataset} onChange={setDataset} />
-      <FileUploader onFile={setFile} />
 
-      <button onClick={onValidate} disabled={!file}>
-        Validate
-      </button>
+      <FileUploader
+        dataset={dataset}
+        onResult={(res) => {
+          setValidation(res);
+        }}
+      />
 
-      {validation && <ValidationSummary result={validation} />}
+      {validation && <ValidationResult result={validation} />}
 
-      <button onClick={onImport} disabled={!validation?.valid}>
+      {/* ✅ IMPORT BUTTON (now functional) */}
+      <button disabled={!validation?.valid} onClick={onImport}>
         Import
       </button>
-    </>
+    </div>
   );
 }

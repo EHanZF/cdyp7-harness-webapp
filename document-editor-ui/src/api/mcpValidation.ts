@@ -1,16 +1,23 @@
-// src/api/mcpValidation.ts
-export async function validateImport(
-    dataset: string,
-    file: File
-): Promise<any> {
-    const form = new FormData();
-    form.append("dataset", dataset);
-    form.append("file", file);
+export type DatasetType =
+    | "MCP_FEATURES"
+    | "FEATURE_REQUIREMENT_TRACE"
+    | "FEATURE_REQUIREMENT_VERIFICATION_GRAPH";
 
-    const res = await fetch("/api/mcp/validate-import", {
-        method: "POST",
-        body: form,
-    });
+export interface ValidationResponse {
+    valid: boolean;
+    errors?: string[];
+    error?: string;
+}
 
-    return res.json();
+export async function validateImport(dataset, file) {
+  const formData = new FormData();
+  formData.append("dataset", dataset);
+  formData.append("file", file);
+
+  const res = await fetch("/api/mcp/validate-import", {
+    method: "POST",
+    body: formData,
+  });
+
+  return res.json();
 }

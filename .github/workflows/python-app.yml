@@ -1,65 +1,55 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
 name: Python application
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
-    - name: Install dependencies & package
-      run: |
-        python -m pip install --upgrade pip setuptools wheel
-        pip install flake8 pytest pyyaml
-        # try editable install (preferred); if it fails, fall back to setting PYTHONPATH
-        if pip install -e ".[dev]"; then
-          echo "Editable install succeeded"
-        else
-          echo "Editable install failed; falling back to PYTHONPATH"
+      - uses: actions/checkout@v5
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Set PYTHONPATH
+        run: |
           echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
-        fi
 
-        # Ensure PYTHONPATH points to the workspace so tests can import 'app' in CI
-        echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
-    - name: Run repository guards (PRs only)
-      if: github.event_name == 'pull_request'
+      - name: Run repository guards
+        if: github.event_name == 'pull_request'
+        run: |
+          set -e
+          python .github/hooks/static_namespace_guard.py --root .
+          python .github/hooks/forbidden_reference_guard.py --root .
+          if [ -f contracts/cdyp7-tool-allowlist.yaml ]; then
+            python .github/hooks/tool_allowlist_guard.py --root .
+          else
+            echo "Skipping tool_allowlist_guard (contracts missing)"
+          fi
+          python .github/hooks/policy_override_guard.py --root .
+          python .github/hooks/schema_snapshot_guard.py --root .
+          python .github/hooks/tool_result_envelope_guard.py --root .
 
-    - name: Run repository guards
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      run: |
-        set -e
-        python .github/hooks/static_namespace_guard.py --root .
-        python .github/hooks/forbidden_reference_guard.py --root .
-        if [ -f contracts/cdyp7-tool-allowlist.yaml ]; then
-          python .github/hooks/tool_allowlist_guard.py --root .
-        else
-          echo "Skipping tool_allowlist_guard (contracts/cdyp7-tool-allowlist.yaml not found)"
-        fi
-        python .github/hooks/policy_override_guard.py --root .
-        python .github/hooks/schema_snapshot_guard.py --root .
-        python .github/hooks/tool_result_envelope_guard.py --root .
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest
+      - name: Test with pytest
+        run: |
+          pytest -vv

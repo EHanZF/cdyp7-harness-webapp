@@ -1,1 +1,61 @@
-<!doctype html><html><head><meta charset="utf-8"><title>CDYP7 Harness Tooling API</title><style>body{font-family:Segoe UI,Arial;background:#0f172a;color:#e5e7eb;padding:24px}pre,textarea{background:#020617;color:#e5e7eb;border:1px solid #334155;border-radius:10px;padding:12px}textarea{width:100%;height:360px}button{background:#2563eb;color:white;border:0;border-radius:8px;padding:10px 16px}.pill{display:inline-block;border:1px solid #475569;border-radius:999px;padding:4px 8px;margin:3px}</style></head><body><h1>CDYP7 Harness Tooling API</h1><p><span class="pill">schema-first</span><span class="pill">blob-backed</span><span class="pill">no approval authority</span><span class="pill">fail-closed</span></p><button onclick="listTools()">List MCP Tools</button><pre id="out">Ready.</pre><script>async function listTools(){const r=await fetch('/mcp/tools/list');out.textContent=JSON.stringify(await r.json(),null,2)}</script></body></html>
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CDYP7 Harness Tooling API</title>
+    <style>
+        body {
+            font-family: Segoe UI, Arial;
+            background: #0f172a;
+            color: #e5e7eb;
+            padding: 24px
+        }
+
+        pre,
+        textarea {
+            background: #020617;
+            color: #e5e7eb;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 12px
+        }
+
+        textarea {
+            width: 100%;
+            height: 360px
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 16px
+        }
+
+        .pill {
+            display: inline-block;
+            border: 1px solid #475569;
+            border-radius: 999px;
+            padding: 4px 8px;
+            margin: 3px
+        }
+    </style>
+</head>
+
+<body>
+    <h1>CDYP7 Harness Tooling API</h1>
+    <p><span class="pill">schema-first</span><span class="pill">blob-backed</span><span class="pill">no approval
+            authority</span><span class="pill">fail-closed</span></p><button onclick="listTools()">List MCP
+        Tools</button>
+    <pre id="out">Ready.</pre>
+    <script>async function listTools() { const r = await fetch('/mcp/tools/list'); out.textContent = JSON.stringify(await r.json(), null, 2) }</script>
+</body>
+
+</html>
+
+<label for="fileInput"><strong>Upload CSV or JSON file</strong></label>
+<input id="fileInput" type="file" accept=".csv,.json" />
+
+/styles.css

@@ -30,6 +30,9 @@ jobs:
       - name: Run pytest
         run: PYTHONPATH=. pytest -c pytest.ini --ignore=tests/contract
 
+      - name: Enforce version pinning
+        run: ts-node scripts/checkVersions.ts
+
   lint:
     runs-on: ubuntu-latest
 

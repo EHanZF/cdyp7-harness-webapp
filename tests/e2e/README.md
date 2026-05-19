@@ -37,10 +37,10 @@ PowerShell manual lifecycle (captures process and ensures cleanup):
 
 $proc = Start-Process -NoNewWindow -FilePath python -ArgumentList '-m','uvicorn','app.main:app','--host','127.0.0.1','--port','8000' -PassThru
 try {
-  Set-Location tests\e2e
-  npx playwright test
+Set-Location tests\e2e
+npx playwright test
 } finally {
-  Stop-Process -Id $proc.Id -Force
+Stop-Process -Id $proc.Id -Force
 }
 
 Note: For CI reproducibility, commit tests/e2e/package-lock.json and use npm ci in pipelines.

@@ -2,21 +2,18 @@
   "python.analysis.extraPaths": [
     "${workspaceFolder}"
   ],
-
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
   "python.testing.pytestArgs": [
     "tests"
   ],
-
   "python.terminal.activateEnvironment": true,
   "python.envFile": "${workspaceFolder}/.env",
-
   "flake8.enabled": true,
   "flake8.importStrategy": "fromEnvironment",
   "flake8.args": [],
-
   "editor.formatOnSave": true,
   "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true
+  "files.trimTrailingWhitespace": true,
+  "azureTerraform.checkTerraformCmd": false
 }

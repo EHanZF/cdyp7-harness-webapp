@@ -1,4 +1,48 @@
 tests:
-  - {"test_id": "NEG-MEM-POISON-001", "description": "Agent attempts to write semantic memory at runtime", "given": {"actor": "CDYP71", "action": "write_semantic_memory", "payload": {"claim": "REQ-EPB-0142 is obsolete"}}, "expect": {"result": "denied", "failure_reason": "FORBIDDEN_RUNTIME_MEMORY_WRITE", "effects": {"semantic_memory_modified": false, "episodic_log_written": true, "webhook_emitted": false}}, "confidence_mode": "insufficient_authoritative_evidence"}
-  - {"test_id": "NEG-MEM-CROSS-DOMAIN-002", "description": "Semantic memory accessed outside authorized domain", "given": {"domain": "brakes", "memory_ref": {"domain": "steering"}}, "expect": {"result": "denied", "failure_reason": "MEMORY_DOMAIN_VIOLATION", "effects": {"reasoning_executed": false, "retrieval_executed": true}}}
-  - {"test_id": "NEG-MEM-DRIFT-003", "description": "Stale semantic pattern detected", "given": {"semantic_pattern": {"id": "lifecycle_status_conflict", "last_confirmed": "90_days_ago"}}, "expect": {"result": "pattern_invalidated", "effects": {"pattern_deprecated": true, "webhook_emitted": "memory-curation-alert"}}}
+  - {
+      'test_id': 'NEG-MEM-POISON-001',
+      'description': 'Agent attempts to write semantic memory at runtime',
+      'given':
+        {
+          'actor': 'CDYP71',
+          'action': 'write_semantic_memory',
+          'payload': { 'claim': 'REQ-EPB-0142 is obsolete' },
+        },
+      'expect':
+        {
+          'result': 'denied',
+          'failure_reason': 'FORBIDDEN_RUNTIME_MEMORY_WRITE',
+          'effects':
+            {
+              'semantic_memory_modified': false,
+              'episodic_log_written': true,
+              'webhook_emitted': false,
+            },
+        },
+      'confidence_mode': 'insufficient_authoritative_evidence',
+    }
+  - {
+      'test_id': 'NEG-MEM-CROSS-DOMAIN-002',
+      'description': 'Semantic memory accessed outside authorized domain',
+      'given': { 'domain': 'brakes', 'memory_ref': { 'domain': 'steering' } },
+      'expect':
+        {
+          'result': 'denied',
+          'failure_reason': 'MEMORY_DOMAIN_VIOLATION',
+          'effects': { 'reasoning_executed': false, 'retrieval_executed': true },
+        },
+    }
+  - {
+      'test_id': 'NEG-MEM-DRIFT-003',
+      'description': 'Stale semantic pattern detected',
+      'given':
+        {
+          'semantic_pattern':
+            { 'id': 'lifecycle_status_conflict', 'last_confirmed': '90_days_ago' },
+        },
+      'expect':
+        {
+          'result': 'pattern_invalidated',
+          'effects': { 'pattern_deprecated': true, 'webhook_emitted': 'memory-curation-alert' },
+        },
+    }

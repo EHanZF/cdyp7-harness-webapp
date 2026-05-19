@@ -19,3 +19,23 @@ body {
   width: 100%;
   height: 120px;
 }
+
+.validation-container {
+  margin-top: 1rem;
+}
+
+.valid {
+  color: green;
+}
+
+.invalid {
+  color: red;
+}
+
+.error-section {
+  color: red;
+}
+
+.warning-section {
+  color: orange;
+}

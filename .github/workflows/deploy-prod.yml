@@ -72,3 +72,12 @@ jobs:
               --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
               --name ${{ vars.AZURE_APP_NAME }} \
               --slot staging
+
+              - name: Build Docker image
+  run: |
+    docker build -t $IMAGE_NAME:${{ github.sha }} .
+
+    - name: Push Docker image
+  run: |
+          echo $CR_PAT | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push $IMAGE_NAME:${{ github.sha }}

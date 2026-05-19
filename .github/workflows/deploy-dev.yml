@@ -1,28 +1,98 @@
 name: Deploy Dev
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Python application"]
+    types:
+      - completed
 
 jobs:
-  deploy-dev:
+  deploy:name: Deploy Dev (Immutable)
+
+on:
+  workflow_run:
+    workflows: ["Python application"]
+    types:
+      - completed
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/mcp-harness-api
+
+jobs:
+  deploy:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+
     runs-on: ubuntu-latest
     environment: dev
 
     steps:
-      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+    - name: Extract commit SHA from build
+      id: vars
+      run: |
+        echo "SHA=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+
+    - name: Debug deployment target
+      run: |
+        echo "Deploying commit SHA: ${{ steps.vars.outputs.SHA }}"
+        echo "Using image: $IMAGE_NAME:${{ steps.vars.outputs.SHA }}"
+
+    # ✅ Azure login
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # ✅ Deploy EXACT image (immutable)
+    - name: Deploy container to Azure WebApp (DEV)
+      run: |
+        az webapp config container set \
+          --name "$WEBAPP_NAME" \
+          --resource-group "$RESOURCE_GROUP" \
+          --docker-custom-image-name "$IMAGE_NAME:${{ steps.vars.outputs.SHA }}"
+      env:
+        WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+        RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+
+    # ✅ Optional: verify deployment health
+    - name: Verify deployment
+      run: |
+        sleep 10
+        curl -f https://$WEBAPP_NAME.azurewebsites.net/health
+      env:
+        WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Build deployment package
+      - name: Install dependencies
         run: |
-          tar -czf mcp-app.tar.gz app requirements.txt startup.sh
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
+      # ✅ Optional: sanity check (prevents deploying broken app)
+      - name: Validate app starts
+        run: |
+          python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          sleep 5
+          curl -f http://127.0.0.1:8000/health || exit 1
+
+      # ✅ Replace this with your real deploy target
       - name: Deploy to Dev
         run: |
-          echo "Deploying mcp-app.tar.gz to dev environment"
+          echo "Deploying to DEV environment..."
+          # Example:
           # az webapp deploy ...

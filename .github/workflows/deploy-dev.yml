@@ -1,13 +1,4 @@
-name: Deploy Dev
-
-on:
-  workflow_run:
-    workflows: ["Python application"]
-    types:
-      - completed
-
-jobs:
-  deploy:name: Deploy Dev (Immutable)
+name: Deploy Dev (Immutable)
 
 on:
   workflow_run:
@@ -20,45 +11,45 @@ env:
 
 jobs:
   deploy-dev:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+
     runs-on: ubuntu-latest
     environment: dev
 
-  steps:
-    - name: Azure Login
-      uses: azure/login@v2
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Deploy to Azure (DEV)
-      run: |
-        az webapp config container set \
-          --name ${{ secrets.AZURE_DEV_APP_NAME }} \
-          --resource-group ${{ secrets.AZURE_DEV_RG }} \
-          --docker-custom-image-name ${{ secrets.ACR_LOGIN_SERVER }}/$IMAGE_NAME:${{ github.sha }}
-
     steps:
-      - uses: actions/checkout@v5
+      - name: Extract commit SHA
+        id: vars
+        run: |
+          echo "SHA=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Debug deployment
+        run: |
+          echo "Deploying commit: ${{ steps.vars.outputs.SHA }}"
+          echo "Image: $IMAGE_NAME:${{ steps.vars.outputs.SHA }}"
+
+      # ✅ Azure login
+      - name: Azure Login
+        uses: azure/login@v2
         with:
-          python-version: "3.12"
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Install dependencies
+      # ✅ Deploy immutable image
+      - name: Deploy to Dev WebApp
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          az webapp config container set \
+            --name "$WEBAPP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --docker-custom-image-name "$IMAGE_NAME:${{ steps.vars.outputs.SHA }}"
+        env:
+          WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+          RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
 
-      # ✅ Optional: sanity check (prevents deploying broken app)
-      - name: Validate app starts
+      # ✅ Health check (prevents silent bad deploy)
+      - name: Verify deployment
         run: |
-          python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 &
-          sleep 5
-          curl -f http://127.0.0.1:8000/health || exit 1
-
-      # ✅ Replace this with your real deploy target
-      - name: Deploy to Dev
-        run: |
-          echo "Deploying to DEV environment..."
-          # Example:
-          # az webapp deploy ...
+          sleep 15
+          curl -f https://$WEBAPP_NAME.azurewebsites.net/health
+        env:
+          WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}

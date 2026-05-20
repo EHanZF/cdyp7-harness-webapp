@@ -11,6 +11,8 @@ dependencies = [
   "uvicorn[standard]",
   "python-multipart",
   "python-docx",
+  "fastmcp>=3.3.1",
+  "httpx>=0.28.1",
 ]
 
 [project.optional-dependencies]

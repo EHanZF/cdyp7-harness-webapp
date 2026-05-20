@@ -1,116 +1,54 @@
-name: Release Pipeline
+name: Software Delivery Pipeline
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
-env:
-  IMAGE_NAME: mcp-harness-api
+# Grants the pipeline permissions to write git tags back to your repository
+permissions:
+  contents: write
 
 jobs:
-# ✅ BUILD ONCE (artifact creation)
-  build:
+  ci-and-package:
     runs-on: ubuntu-latest
-
-    outputs:
-      image-tag: ${{ steps.meta.outputs.tag }}
-
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Essential: fetches full git history for correct version calculations
 
-      # --- INSERTED FIX START ---
-      - name: Create mock release config for CI
+      - name: Determine Semantic Version
+        id: semver
+        uses: paulhatch/semantic-version@v5.4.0
+        with:
+          branch: main
+          tag_prefix: "v"
+          major_pattern: "(MAJOR)"
+          minor_pattern: "(MINOR)"
+          version_format: "${major}.${minor}.${patch}"
+
+      - name: Set up Python Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile Versioned Software Artifact
         run: |
-          mkdir -p config/releases
-          echo '{"rbacPolicyVersion": "1.0.0", "routerVersion": "1.0.0"}' > config/releases/current.json
-      # --- INSERTED FIX END ---
+          echo "Packaging application version v${{ steps.semver.outputs.version }}..."
+          tar -czf mcp-app-v${{ steps.semver.outputs.version }}.tar.gz app requirements.txt startup.sh || tar -czf mcp-app-v${{ steps.semver.outputs.version }}.tar.gz .
 
-      - name: Set image tag
-        id: meta
-        run: echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
-
-      - name: Build Docker image
-        run: |
-          docker build -t $IMAGE_NAME:${{ steps.meta.outputs.tag }} .
-
-      - name: Save Docker image
-        run: |
-          docker save $IMAGE_NAME:${{ steps.meta.outputs.tag }} > image.tar
-
-      - name: Upload artifact
+      - name: Publish Artifact for Software Agents
         uses: actions/upload-artifact@v4
         with:
-          name: image
-          path: image.tar
+          name: mcp-software-v${{ steps.semver.outputs.version }}
+          path: mcp-app-v${{ steps.semver.outputs.version }}.tar.gz
+          retention-days: 14
 
-# ✅ DEV DEPLOY (AUTO)
-  deploy-dev:
-    runs-on: ubuntu-latest
-    needs: build
-
-    environment: dev
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: image
-      - name: Build deployment package
+      - name: Push Git Version Tag
         run: |
-          tar -czf mcp-app.tar.gz src/app src/requirements.txt src/startup.sh
-   
-      - name: Load Docker image
-        run: docker load < image.tar
-
-      - name: Deploy to Azure (DEV)
-        run: |
-          az webapp config container set \
-            --name ${{ secrets.AZURE_DEV_APP_NAME }} \
-            --resource-group ${{ secrets.AZURE_DEV_RG }} \
-            --docker-custom-image-name $IMAGE_NAME:${{ github.sha }}
-
-# ✅ STAGING DEPLOY (OPTIONAL APPROVAL)
-  deploy-staging:
-    runs-on: ubuntu-latest
-    needs: deploy-dev
-
-    environment:
-      name: staging
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: image
-
-      - name: Load Docker image
-        run: docker load < image.tar
-
-      - name: Deploy to Azure (STAGING)
-        run: |
-          az webapp config container set \
-            --name ${{ secrets.AZURE_STAGING_APP_NAME }} \
-            --resource-group ${{ secrets.AZURE_STAGING_RG }} \
-            --docker-custom-image-name $IMAGE_NAME:${{ github.sha }}
-
-# ✅ PRODUCTION DEPLOY (MANUAL APPROVAL)
-  deploy-prod:
-    runs-on: ubuntu-latest
-    needs: deploy-staging
-
-    environment:
-      name: production
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: image
-
-      - name: Load Docker image
-        run: docker load < image.tar
-
-      - name: Deploy to Azure (PROD)
-        run: |
-          az webapp config container set \
-            --name ${{ secrets.AZURE_PROD_APP_NAME }} \
-            --resource-group ${{ secrets.AZURE_PROD_RG }} \
-            --docker-custom-image-name $IMAGE_NAME:${{ github.sha }}
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git tag v${{ steps.semver.outputs.version }}
+          git push origin v${{ steps.semver.outputs.version }}

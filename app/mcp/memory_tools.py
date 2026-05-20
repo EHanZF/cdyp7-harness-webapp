@@ -7,7 +7,7 @@ from app.schemas.memory import SemanticSearchRequest
 
 
 class MemorySemanticSearchTool:
-    name = "memory.semantic_search"
+    name = "cdyp7.memory.semantic_search"
 
     def __init__(self, service: SemanticSearchService):
         self.service = service

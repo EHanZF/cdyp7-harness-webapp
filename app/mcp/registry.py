@@ -72,7 +72,7 @@ def build_tool_registry() -> dict[str, Any]:
     )
 
     return {
-        "memory.semantic_search": semantic_search_tool,
+        "cdyp7.memory.semantic_search": semantic_search_tool,
         "harness.generate_release_sheet": missing_tool_handler(
             "harness.generate_release_sheet"
         ),

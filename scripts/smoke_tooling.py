@@ -21,7 +21,9 @@ try:
     req = urllib.request.Request(
         url, data=json.dumps(payload).encode(), headers={"content-type": "application/json"}, method="POST"
     )
-
+except Exception as e:
+    print(f"Pre-execution setup failed: {e}")
+    ")
 import urllib.request
 from pathlib import Path
 

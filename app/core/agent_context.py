@@ -62,7 +62,7 @@ def _default_context() -> AgentContext:
         system="ABS",
         cat_level="CAT3",
         allowed_tools={
-            "memory.semantic_search",
+            "cdyp7.memory.semantic_search",
             "harness.generate_release_sheet",
             "harness.validate_release_sheet",
             "harness.write_receipt",

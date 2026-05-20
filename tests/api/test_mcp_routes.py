@@ -16,10 +16,10 @@ def test_tools_list_exposes_semantic_search(client):
 
     names = {tool["name"] for tool in tools}
 
-    assert "memory.semantic_search" in names
+    assert "cdyp7.memory.semantic_search" in names
 
     semantic_search = next(
-        tool for tool in tools if tool["name"] == "memory.semantic_search"
+        tool for tool in tools if tool["name"] == "cdyp7.memory.semantic_search"
     )
 
     assert "inputSchema" in semantic_search

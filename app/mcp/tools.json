@@ -21,13 +21,25 @@
         ],
         "additionalProperties": false,
         "properties": {
-          "document_id": { "type": "string" },
-          "system": { "type": "string" },
+          "document_id": {
+            "type": "string"
+          },
+          "system": {
+            "type": "string"
+          },
           "cat_level": {
             "type": "string",
-            "enum": ["CAT1", "CAT2", "CAT3", "CAT4", "CAT5"]
+            "enum": [
+              "CAT1",
+              "CAT2",
+              "CAT3",
+              "CAT4",
+              "CAT5"
+            ]
           },
-          "template_ref": { "type": "string" },
+          "template_ref": {
+            "type": "string"
+          },
           "release": {
             "type": "object",
             "additionalProperties": true
@@ -40,14 +52,18 @@
             "type": "object",
             "additionalProperties": true
           },
-          "reason_for_release": { "type": "string" },
+          "reason_for_release": {
+            "type": "string"
+          },
           "release_documentation": {
             "type": "object",
             "additionalProperties": true
           },
           "known_issues": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
@@ -57,13 +73,21 @@
       "description": "Validates generated release sheet against schema and CAT rules.",
       "input_schema": {
         "type": "object",
-        "required": ["artifact_id", "validation_profile"],
+        "required": [
+          "artifact_id",
+          "validation_profile"
+        ],
         "additionalProperties": false,
         "properties": {
-          "artifact_id": { "type": "string" },
+          "artifact_id": {
+            "type": "string"
+          },
           "validation_profile": {
             "type": "string",
-            "enum": ["system_release_sheet", "system_release_sheet_cat5"]
+            "enum": [
+              "system_release_sheet",
+              "system_release_sheet_cat5"
+            ]
           }
         }
       }
@@ -73,13 +97,26 @@
       "description": "Writes immutable receipt to receipts container.",
       "input_schema": {
         "type": "object",
-        "required": ["event_type", "actor", "artifact_id", "sha256"],
+        "required": [
+          "event_type",
+          "actor",
+          "artifact_id",
+          "sha256"
+        ],
         "additionalProperties": false,
         "properties": {
-          "event_type": { "type": "string" },
-          "actor": { "type": "string" },
-          "artifact_id": { "type": "string" },
-          "sha256": { "type": "string" },
+          "event_type": {
+            "type": "string"
+          },
+          "actor": {
+            "type": "string"
+          },
+          "artifact_id": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          },
           "metadata": {
             "type": "object",
             "additionalProperties": true
@@ -92,10 +129,14 @@
       "description": "Returns metadata for controlled read-only artifact.",
       "input_schema": {
         "type": "object",
-        "required": ["artifact_id"],
+        "required": [
+          "artifact_id"
+        ],
         "additionalProperties": false,
         "properties": {
-          "artifact_id": { "type": "string" }
+          "artifact_id": {
+            "type": "string"
+          }
         }
       }
     },
@@ -104,20 +145,30 @@
       "description": "Resolves prior execution using cached artifacts and receipts.",
       "input_schema": {
         "type": "object",
-        "required": ["run_id", "adapter_version"],
+        "required": [
+          "run_id",
+          "adapter_version"
+        ],
         "additionalProperties": false,
         "properties": {
-          "run_id": { "type": "string" },
-          "adapter_version": { "type": "string" }
+          "run_id": {
+            "type": "string"
+          },
+          "adapter_version": {
+            "type": "string"
+          }
         }
       }
     },
     {
-      "name": "memory.semantic_search",
+      "name": "cdyp7.memory.semantic_search",
       "description": "Namespace-scoped semantic search over engineering memory.",
       "input_schema": {
         "type": "object",
-        "required": ["namespace", "query"],
+        "required": [
+          "namespace",
+          "query"
+        ],
         "additionalProperties": false,
         "properties": {
           "namespace": {
@@ -140,14 +191,25 @@
             "properties": {
               "document_type": {
                 "type": "string",
-                "enum": ["requirements", "specification", "analysis", "evidence"]
+                "enum": [
+                  "requirements",
+                  "specification",
+                  "analysis",
+                  "evidence"
+                ]
               },
               "system": {
                 "type": "string"
               },
               "cat_level": {
                 "type": "string",
-                "enum": ["CAT1", "CAT2", "CAT3", "CAT4", "CAT5"]
+                "enum": [
+                  "CAT1",
+                  "CAT2",
+                  "CAT3",
+                  "CAT4",
+                  "CAT5"
+                ]
               }
             }
           }

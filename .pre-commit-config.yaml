@@ -1,7 +1,7 @@
+exclude: ^\.github/workflows/
 repos:
-  - repo: https://github.com/
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-      exclude: ^\.github/workflows/
       - id: end-of-file-fixer

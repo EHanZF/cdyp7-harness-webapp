@@ -41,7 +41,7 @@ jobs:
       - name: Create mock release config for CI
         run: |
           mkdir -p config/releases
-          echo '{}' > config/releases/current.json
+          echo '{"rbacPolicyVersion": "1.0.0", "routerVersion": "1.0.0"}' > config/releases/current.json
 
       - name: Enforce version pinning
         run: npx ts-node scripts/checkVersions.ts

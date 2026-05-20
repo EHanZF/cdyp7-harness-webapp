@@ -1,74 +1,161 @@
-trigger:
-  branches:
-    include:
-      - main
+trigger: none
+pr: none
+
+resources:
+  webhooks:
+    - webhook: GitHubReleaseHook
+      connection: GitHub-To-Azure-Incoming-Connection
 
 variables:
-  pythonVersion: '3.13'
+  pythonVersion: '3.12'
+  artifactName: 'drop'
+  packageName: 'app.zip'
   packagePath: '$(Build.ArtifactStagingDirectory)/app.zip'
+  enableDeploy: 'false'
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 stages:
-- stage: DevSmoke
-  displayName: 'Dev: smoke and validation (non-prod)'
-  condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'develop'))
-  jobs:
-  - job: dev_smoke
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: $(pythonVersion)
-    - powershell: pwsh ./scripts/ci_install_dev.ps1
-      displayName: 'Install dev requirements (if present)'
-    - script: |
-        python -m venv .venv
-        source .venv/bin/activate
-        pip install -r requirements.txt -r requirements-dev.txt
-        python scripts/validate_static.py
-        python scripts/smoke_tooling.py
-      displayName: 'Run dev validation & smoke (non-prod)'
 
-- stage: Build_Test
+# ======================
+# STAGE 1: VALIDATE
+# ======================
+- stage: Validate_And_Package
+  displayName: 'Validate and Build Package'
   jobs:
   - job: validate
+    displayName: 'Contract + Runtime Validation'
     steps:
+
+    - checkout: self
+      clean: true
+
+    - task: UsePythonVersion@0
+      displayName: 'Use Python $(pythonVersion)'
+      inputs:
+        versionSpec: '$(pythonVersion)'
+        architecture: 'x64'
+
+    - bash: |
+        set -euo pipefail
+
+        echo "Python version:"
+        python --version
+
+        python -m venv .venv
+        source .venv/bin/activate
+
+        python -m pip install --upgrade pip setuptools wheel
+
+        echo "Installing dependencies..."
+
+        # 🔒 Fail-fast if dependencies break on Python 3.13
+        if [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+        fi
+
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
+
+        echo "Installed packages:"
+        pip list
+
+        echo "Running static validation..."
+        python scripts/validate_static.py
+
+        echo "Running contract tests..."
+        python -m pytest tests/contract/test_tooling_api_contract.py -q
+      displayName: 'Validate runtime boundaries and contracts'
+
+    - bash: |
+        set -euo pipefail
+
+        mkdir -p $(Build.ArtifactStagingDirectory)
+
+        zip -r $(packagePath) . \
+          -x '.venv/*' \
+          -x '.git/*' \
+          -x 'outputs/*' \
+          -x 'artifacts/*' \
+          -x 'receipts/*' \
+          -x '__pycache__/*' \
+          -x '*.pyc'
+
+        ls -lah $(Build.ArtifactStagingDirectory)
+      displayName: 'Package application'
+
+    - publish: $(packagePath)
+      artifact: $(artifactName)
+
+
+# ======================
+# STAGE 2: SMOKE
+# ======================
+- stage: DevSmoke
+  displayName: 'Smoke Validation'
+  dependsOn: Validate_And_Package
+  condition: succeeded()
+
+  jobs:
+  - job: smoke
+    displayName: 'Smoke Test Runtime'
+    steps:
+
+    - checkout: self
+      clean: true
+
     - task: UsePythonVersion@0
       inputs:
         versionSpec: $(pythonVersion)
-    - script: |
+
+    - bash: |
+        set -euo pipefail
+
         python -m venv .venv
         source .venv/bin/activate
-        pip install -r requirements.txt
-        python scripts/validate_static.py
-        python tests/contract/test_tooling_api_contract.py
-      displayName: Validate runtime boundaries and contract tests
-    - script: |
-        zip -r $(packagePath) . -x '.venv/*' '.git/*' 'outputs/*' 'artifacts/*' 'receipts/*'
-      displayName: Package web app
-    - publish: $(packagePath)
-      artifact: drop
 
+        pip install --upgrade pip
+
+        [ -f requirements.txt ] && pip install -r requirements.txt
+        [ -f requirements-dev.txt ] && pip install -r requirements-dev.txt
+
+        echo "Running smoke validation..."
+        python scripts/smoke_tooling.py
+      displayName: 'Run smoke tooling'
+
+
+# ======================
+# STAGE 3: DEPLOY (GATED)
+# ======================
 - stage: Deploy
-  dependsOn: Build_Test
-  condition: succeeded()
+  displayName: 'Production Delivery'
+  dependsOn: DevSmoke
+  condition: and(succeeded(), eq(variables['enableDeploy'], 'true'))
+
   jobs:
-  - deployment: deploy_appservice
-    environment: cdyp7-harness-webapp
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: drop
-          - task: AzureWebApp@1
-            inputs:
-              azureSubscription: '$(AZURE_SERVICE_CONNECTION)'
-              appType: webAppLinux
-              appName: '$(APP_SERVICE_NAME)'
-              package: '$(Pipeline.Workspace)/drop/app.zip'
-              runtimeStack: 'PYTHON|3.12'
-              startUpCommand: './startup.sh'
+  - job: deploy
+    displayName: 'Transmit Package'
+    steps:
+
+    - download: current
+      artifact: $(artifactName)
+
+    - bash: |
+        set -euo pipefail
+
+        FILE="$(Pipeline.Workspace)/$(artifactName)/$(packageName)"
+
+        test -f "$FILE"
+
+        echo "Deploying package..."
+
+        curl --fail --show-error \
+          -H "Authorization: Bearer ${SECURE_TOKEN}" \
+          -F "file=@${FILE}" \
+          -F "version=$(Build.BuildNumber)" \
+          "${CLIENT_DEPLOY_URL}"
+      env:
+        SECURE_TOKEN: $(WEBHOOK_SECRET)
+        CLIENT_DEPLOY_URL: $(CLIENT_DEPLOY_URL)python -m pytest tests/contract/test_tooling_api_contract.py

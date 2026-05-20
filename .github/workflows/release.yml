@@ -19,6 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # --- INSERTED FIX START ---
+      - name: Create mock release config for CI
+        run: |
+          mkdir -p config/releases
+          echo '{"rbacPolicyVersion": "1.0.0", "routerVersion": "1.0.0"}' > config/releases/current.json
+      # --- INSERTED FIX END ---
+
       - name: Set image tag
         id: meta
         run: echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT

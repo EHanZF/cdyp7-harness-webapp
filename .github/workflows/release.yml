@@ -55,7 +55,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: image
-
+      - name: Build deployment package
+        run: |
+          tar -czf mcp-app.tar.gz src/app src/requirements.txt src/startup.sh
+   
       - name: Load Docker image
         run: docker load < image.tar
 

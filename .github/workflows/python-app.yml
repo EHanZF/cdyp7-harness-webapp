@@ -13,22 +13,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v5
+    # Standardize project-wide paths at the global job level
+    env:
+      PYTHONPATH: ${{ github.workspace }}
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+    steps:
+      # Upgraded to v6 for native Node 24 support
+      - uses: actions/checkout@v6
+
+      # Configured with Python 3.13 and integrated dependency caching
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.13"
+          cache: "pip"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Set PYTHONPATH
-        run: |
-          echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
       - name: Run repository guards
         if: github.event_name == 'pull_request'

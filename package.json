@@ -1,5 +1,6 @@
 {
   "name": "playwright-e2e",
+  "description": "cdyp7-harness-webapp",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -24,6 +25,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^9.1.7",
     "prettier": "^2.8.8",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "ts-node": "^10.9.2"
   }
 }

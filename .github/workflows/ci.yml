@@ -30,18 +30,18 @@ jobs:
       - name: Run pytest
         run: PYTHONPATH=. pytest -c pytest.ini --ignore=tests/contract
 
-      # --- FIXED: Installs Node and dependencies so ts-node can execute ---
+      # --- FIXED: Provision Node 24 and temporary execution dependencies ---
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: "npm"
 
-      - name: Install Node dependencies
-        run: npm ci
+      - name: Provision local TypeScript execution dependencies
+        run: npm install ts-node typescript @types/node --no-save
 
       - name: Create mock release config for CI
-        run: mkdir -p config/releases
-        echo '{}' > config/releases/current.json
+        run: |
+          mkdir -p config/releases
+          echo '{}' > config/releases/current.json
 
       - name: Enforce version pinning
         run: npx ts-node scripts/checkVersions.ts
@@ -56,7 +56,7 @@ jobs:
         with:
           python-version: "3.13"
 
-      # --- FIXED: Added flake8 to the pip setup string ---
+      # --- FIXED: Explicitly install flake8 so pre-commit hooks do not throw exit code 127 ---
       - name: Install pre-commit and linting engines
         run: |
           python -m pip install --upgrade pip

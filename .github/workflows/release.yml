@@ -30,11 +30,6 @@ jobs:
         id: meta
         run: echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
 
-
-      - name: Set image tag
-        id: meta
-        run: echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
-
       - name: Build Docker image
         run: |
           docker build -t $IMAGE_NAME:${{ steps.meta.outputs.tag }} .

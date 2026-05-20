@@ -21,18 +21,18 @@ try:
     req = urllib.request.Request(
         url, data=json.dumps(payload).encode(), headers={"content-type": "application/json"}, method="POST"
     )
-except Exception as e:
+except ImportError as e:
     print(f"Pre-execution setup failed: {e}")
-    ")
-import urllib.request
-from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
 payload = json.loads((root / "examples" / "generate-release-sheet.tool-call.json").read_text(encoding="utf-8"))
 
 url = "http://127.0.0.1:8000/mcp/tools/call"
 try:
-    req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={'content-type':'application/json'}, method='POST')
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode(),
+        headers={'content-type': 'application/json'}, method='POST')
     with urllib.request.urlopen(req, timeout=5) as r:
         out = json.loads(r.read())
     print(json.dumps(out, indent=2))
@@ -62,8 +62,8 @@ except (urllib.error.URLError, ConnectionRefusedError, TimeoutError) as exc:
         )
         print(json.dumps({"content": res}, indent=2))
     elif tool_name == "harness.validate_release_sheet":
-        res = validate_release_sheet(ValidateReleaseSheetToolRequest(**env["arguments"]))
-        print(json.dumps({"content": res}, indent=2))
+        validate_release_sheet(ValidateReleaseSheetToolRequest(**env["arguments"]))
+        print(json.dumps({"content"}, indent=2))
     elif tool_name == "harness.write_receipt":
         res = write_receipt(WriteReceiptToolRequest(**env["arguments"]), env.get("actor", ""))
         print(json.dumps({"content": res}, indent=2))

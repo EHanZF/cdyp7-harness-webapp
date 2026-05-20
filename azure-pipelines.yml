@@ -4,7 +4,7 @@ trigger:
       - main
 
 variables:
-  pythonVersion: '3.12'
+  pythonVersion: '3.13'
   packagePath: '$(Build.ArtifactStagingDirectory)/app.zip'
 
 pool:
@@ -57,7 +57,7 @@ stages:
   condition: succeeded()
   jobs:
   - deployment: deploy_appservice
-    environment: cdyp7-harness
+    environment: cdyp7-harness-webapp
     strategy:
       runOnce:
         deploy:

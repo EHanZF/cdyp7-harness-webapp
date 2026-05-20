@@ -1,7 +1,7 @@
 checkpoint_id: CKPT-CDYP7-HARNESS-TOOLING-API-AZURE-001
 status: tooling_api_integrated_azure_ready
 semantic_delta: PRESENT
-domain: cdyp7-runtime-harness-tooling-api
+domain: cdyp7-harness-webapp
 summary: >-
   Integrates the CDYP7 Harness Tooling API into the FastAPI web app with MCP tools/list and tools/call,
   REST tool endpoints, Azure Blob Storage-backed artifacts and receipts, Key Vault config binding,

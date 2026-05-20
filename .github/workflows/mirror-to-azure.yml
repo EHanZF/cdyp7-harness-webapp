@@ -1,0 +1,29 @@
+name: Mirror to Azure DevOps
+
+on:
+    push:
+        branches:
+            - main
+            - develop # Add any other branches you want to auto-sync
+
+jobs:
+    mirror:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout GitHub Repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # Fetches full history so all branches/tags can sync cleanly
+
+            - name: Push to Azure DevOps Repo
+              env:
+                  AZURE_PAT: ${{ secrets.AZURE_DEVOPS_SYNC_PAT }}
+              run: |
+                  # 1. Format the target Azure DevOps repository URL cleanly
+                  TARGET_URL="https://ZF-DevOps-Platform-nonembedded:$AZURE_PAT@dev.azure.com/ZF-DevOps-Platform-nonembedded/AZP-2187_ZF_A2A_MCP/_git/AZP-2187_ZF_A2A_MCP"
+
+                  # 2. Add Azure DevOps as a temporary remote tracking endpoint
+                  git remote add azure "$TARGET_URL"
+
+                  # 3. Securely push the current branch tracking upstream to Azure
+                  git push azure refs/remotes/origin/*:refs/heads/* --force

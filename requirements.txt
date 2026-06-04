@@ -34,7 +34,7 @@ python-multipart==0.0.27
     # via mcp-intent-boundary (pyproject.toml)
 pyyaml==6.0.2
     # via uvicorn
-starlette==0.45.3
+starlette==1.0.1
     # via fastapi
 typing-extensions==4.15.0
     # via

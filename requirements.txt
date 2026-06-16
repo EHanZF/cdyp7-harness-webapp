@@ -30,7 +30,7 @@ python-docx==1.1.2
     # via mcp-intent-boundary (pyproject.toml)
 python-dotenv==1.2.2
     # via uvicorn
-python-multipart==0.0.27
+python-multipart==0.0.31
     # via mcp-intent-boundary (pyproject.toml)
 pyyaml==6.0.2
     # via uvicorn
